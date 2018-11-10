@@ -1,6 +1,7 @@
 ﻿#include <iostream>
-//#include <utility>
+#include <utility>
 #include <string>
+#include<conio.h>
 using namespace std;
 
 
@@ -36,10 +37,12 @@ int  task::operator>(const task &rt)
 	return date > rt.date;
 }
 
+
 int  task::operator==(const task &rt)
 {
 	return ((todo == rt.todo) && (date == rt.date));
 }
+
 
 ostream & operator<<(ostream &os, const task &rt)
 {
@@ -73,20 +76,24 @@ protected:
 public:
 	queue() :head(nullptr) {}
 
-	virtual queue & operator+=(const task &rq) // virtual!!!
+	queue & operator+=(const task &rq) // virtual!!!
 	{
 		q_elem *qep = new q_elem(rq);
 		if (head)
+		{
 			tail->next = qep;
+		}
 		else
+		{
 			head = qep;
+		}
 
 		tail = qep;
 
 		return *this;
 	}
-
-	queue(const queue &rq) :head(nullptr)
+	
+	queue(const queue &rq) :head(nullptr) //zostanie wywolany w klasie potomnej
 	{
 		q_elem *qep = rq.head;
 
@@ -157,7 +164,7 @@ public:
 
 		return 0;
 	}
-	
+
 	friend istream & operator>>(istream &is, queue &rq)
 	{
 		task t;		// wymaga konstruktora bezargumentowego task()
@@ -185,7 +192,7 @@ public:
 };
 
 ///////////////////////////////////////////////////////////////////////////////
-class sorted_q :public queue
+class sorted_q :public queue  //z0ostanie uzyty kopiujacy operator przypisania//wykorzysta konstruktor kopiujacy//wykorzysta konstruktor domyslny
 {
 public:
 	sorted_q & operator+=(const task &rq)	// inny typ zwracany - ok tutaj 
@@ -224,11 +231,11 @@ public:
 		}
 	}
 
-	using queue::operator=;
+	//using queue::operator=;
 
 	//	kolejno�� wywo�ywania konstruktor�w powoduje ze poni�sza deklaracja nie jest potrzebna
 	//
-	//	using queue::queue;
+	//	using queue::queue();
 
 	//	automatyczne konwersje o kl. bazowej i metody wirtualne powoduj� �e poni�sze nie s� niezb�dne
 	//
@@ -241,7 +248,7 @@ int main()
 {
 	queue q1;
 	sorted_q s1;
-
+	
 	q1 += task("task a", 20161020);
 	q1 += task("task b", 20161020);
 	q1 += task("task c", 20161515);
@@ -264,7 +271,14 @@ int main()
 	s1 += task("task g", 00000);
 	cout << endl << s1;
 	s1.complete(q1);
+	cout <<endl<< "xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" << endl;
 	cin >> s1;
 	cout << endl << s1;
+
+	string n = "100";
+	cout << n << endl;
 	cout.flush();
+	
+	_getch();
+	return 0;
 }
