@@ -115,7 +115,33 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="Źródło.cpp" />
+    <ClCompile Include="Account.cpp" />
+    <ClCompile Include="ATM.cpp" />
+    <ClCompile Include="BalanceInquiry.cpp" />
+    <ClCompile Include="BankDatabase.cpp" />
+    <ClCompile Include="CardReader.cpp" />
+    <ClCompile Include="Deposit.cpp" />
+    <ClCompile Include="DepositSlot.cpp" />
+    <ClCompile Include="Keypad.cpp" />
+    <ClCompile Include="main.cpp" />
+    <ClCompile Include="Safe.cpp" />
+    <ClCompile Include="Screen.cpp" />
+    <ClCompile Include="Transaction.cpp" />
+    <ClCompile Include="Withdrawal.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Account.h" />
+    <ClInclude Include="ATM.h" />
+    <ClInclude Include="BalanceInquiry.h" />
+    <ClInclude Include="BankDatabase.h" />
+    <ClInclude Include="CardReader.h" />
+    <ClInclude Include="Deposit.h" />
+    <ClInclude Include="DepositSlot.h" />
+    <ClInclude Include="Keypad.h" />
+    <ClInclude Include="Safe.h" />
+    <ClInclude Include="Screen.h" />
+    <ClInclude Include="Transaction.h" />
+    <ClInclude Include="Withdrawal.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
