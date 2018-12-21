@@ -4,9 +4,8 @@
 class Keypad
 {
 	int nr;
+
 public:
-
 	Keypad();
-
 	int getInput();
 };

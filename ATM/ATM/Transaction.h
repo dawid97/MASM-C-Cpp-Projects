@@ -14,6 +14,5 @@ public:
 	Transaction(int userAccountNumber, Screen*atmScreen, BankDatabase*atmBankDatabase);
 
 	int getAccountNumber();
-
 	virtual void execute() = 0;
 };

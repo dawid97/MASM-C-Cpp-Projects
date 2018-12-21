@@ -8,41 +8,52 @@ ATM::ATM()
 
 void ATM::run()
 {
-	//cout << &bankDatabase << endl;
-	//bankDatabase.displayAccounts();
 	while (true)
 	{
 		while (!userAuthenticated)
 		{
-			screen.displayMessageLine("\nWelcome!");
+			screen.displayMessageLine("\nWitamy!");
 			authenticateUser();
 		}
 
 		performTransactions();
 		userAuthenticated = false;
 		currentAccountNumber = 0;
-		screen.displayMessageLine("\nThank you! Goodbye");
+		screen.displayMessageLine("\nDziekujemy! Do zobaczenia");
+		Sleep(3000);
+		system("cls");
 	}
 }
 
 void ATM::authenticateUser()
 {
-	
 	int accountNumber = cardReader.getAccountNumber();
-	screen.displayMessage("\nEnter your PIN: ");
+	screen.displayMessage("\nWprowadz twoj PIN: ");
 	int pin = keypad.getInput();
+	system("cls");
 
 	if (cardReader.validatePIN(pin))
 	{
 		userAuthenticated = bankDatabase.authenticateUser(accountNumber);
-	}
 
-	if (userAuthenticated)
-	{
-		currentAccountNumber = accountNumber;
+		if (!userAuthenticated)
+		{
+			screen.displayMessageLine("Karta nie jest z tego banku");
+			Sleep(3000);
+			system("cls");
+		}
+		else
+		{
+			currentAccountNumber = accountNumber;
+			system("cls");
+		}
 	}
 	else
-		screen.displayMessageLine("Invalid PIN or The card is not from this bank. Please try again.");
+	{
+		screen.displayMessageLine("Bledny PIN");
+		Sleep(3000);
+		system("cls");
+	}
 }
 
 void ATM::performTransactions()
@@ -55,40 +66,50 @@ void ATM::performTransactions()
 	{
 		screen.displayMainMenu();
 		int choice = keypad.getInput();
+		
 
 		switch (choice)
 		{
 		case BALANCE_INQUIRY:
 		{
+			system("cls");
 			currentTransaction = new BalanceInquiry(currentAccountNumber, &screen, &bankDatabase);
 			currentTransaction->execute();
 			delete currentTransaction;
+			currentTransaction = nullptr;
 			break;
 		}
 		case WITHDRAWAL:
 		{
-
+			system("cls");
 			currentTransaction = new Withdrawal(currentAccountNumber, &screen, &bankDatabase, &keypad,&safe);
 			currentTransaction->execute();
 			delete currentTransaction;
+			currentTransaction = nullptr;
 			break;
 		}
 		case DEPOSIT:
 		{
-			currentTransaction = new Deposit(currentAccountNumber, &screen, &bankDatabase, &keypad, &depositSlot);
+			system("cls");
+			currentTransaction = new Deposit(currentAccountNumber, &screen, &bankDatabase, &keypad);
 			currentTransaction->execute();
 			delete currentTransaction;
+			currentTransaction = nullptr;
 			break;
 		}
 		case EXIT:
 		{
-			screen.displayMessageLine("\nExiting the system...");
+			screen.displayMessageLine("\nZamykanie systemu...");
+			Sleep(3000);
+			system("cls");
 			userExited = true;
 			break;
 		}
 		default:
 		{
-			screen.displayMessageLine("\nYou did not enter a valid selection. Try again.");
+			screen.displayMessageLine("\nDokonano blednego wyboru. Prosze sprobowac ponownie");
+			Sleep(3000);
+			system("cls");
 			break;
 		}
 		}

@@ -7,6 +7,10 @@ Account::Account(int theAccountNumber, double theAvailableBalance, double theTot
 	totalBalance = theTotalBalane;
 }
 
+int Account::getAccountNumber()
+{
+	return accountNumber;
+}
 
 double Account::getAvailableBalance()
 {
@@ -29,10 +33,7 @@ void Account::debit(double amount)
 	totalBalance -= amount;
 }
 
-int Account::getAccountNumber()
-{
-	return accountNumber;
-}
+
 
 
 

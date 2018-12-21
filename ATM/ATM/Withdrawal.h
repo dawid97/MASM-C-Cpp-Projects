@@ -4,7 +4,7 @@
 #include "BankDatabase.h"
 #include "Keypad.h"
 #include "Safe.h"
-
+#include<Windows.h>
 
 
 class Withdrawal :public Transaction
@@ -13,11 +13,9 @@ class Withdrawal :public Transaction
 	Keypad*keypad;
 	Safe*safe;
 
+	int displayMenuOfAmounts();
+
 public:
 	Withdrawal(int userAccountNumber, Screen*atmScreen, BankDatabase*atmBankDatabase, Keypad*atmKeypad,Safe*atmSafe);
-		
 	void execute();
-
-private:
-	int displayMenuOfAmounts();
 };

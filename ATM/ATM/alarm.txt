@@ -1,5 +1,4 @@
-Red Alarm 500zl
-Red Alarm 200zl
-Red Alarm 100zl
+Green Alarm 200zl
+Green Alarm 100zl
 Green Alarm 50zl
 Green Alarm 20zl

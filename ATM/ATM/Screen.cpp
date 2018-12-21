@@ -11,24 +11,24 @@ void Screen::displayMessageLine(string message)
 	cout << message << endl;
 }
 
-void Screen::displayDollarAmount(double amount)
+void Screen::displayZlAmount(double amount)
 {
-	cout << "$" << amount;
+	cout << amount << "zl";
 }
 
 void Screen::displayMainMenu()
 {
-	cout << "\nMain menu:" << endl;
-	cout << "1-View my balance" << endl;
-	cout << "2-Withdraw cash" << endl;
-	cout << "3-Deposit funds" << endl;
-	cout << "4-Exit\n" << endl;
-	cout << "Enter a choice ";
+	cout << "\nMenu glowne:" << endl;
+	cout << "1-Stan konta" << endl;
+	cout << "2-Wyplata" << endl;
+	cout << "3-Wplata" << endl;
+	cout << "4-Wyjscie\n" << endl;
+	cout << "Dokonaj wyboru: ";
 }
 
 void Screen::displayWithdrawalMenu()
 {
-	cout << "\nWithdrawal Menu:" << endl;
+	cout << "\nMenu wyplat:" << endl;
 	cout << "1 - 20zl" << endl;
 	cout << "2 - 50zl" << endl;
 	cout << "3 - 100zl" << endl;
@@ -36,6 +36,6 @@ void Screen::displayWithdrawalMenu()
 	cout << "5 - 500zl" << endl;
 	cout << "6 - 1000zl" << endl;
 	cout << "7 - 2000zl" << endl;
-	cout << "8 - Cancel transaction" << endl;
-	cout << "\nChoose a withdrawal amount: ";
+	cout << "8 - Zakoncz transakcje" << endl;
+	cout << "\nDokonaj wyboru: ";
 }

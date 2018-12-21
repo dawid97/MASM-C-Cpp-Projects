@@ -121,7 +121,6 @@
     <ClCompile Include="BankDatabase.cpp" />
     <ClCompile Include="CardReader.cpp" />
     <ClCompile Include="Deposit.cpp" />
-    <ClCompile Include="DepositSlot.cpp" />
     <ClCompile Include="Keypad.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Safe.cpp" />
@@ -136,7 +135,6 @@
     <ClInclude Include="BankDatabase.h" />
     <ClInclude Include="CardReader.h" />
     <ClInclude Include="Deposit.h" />
-    <ClInclude Include="DepositSlot.h" />
     <ClInclude Include="Keypad.h" />
     <ClInclude Include="Safe.h" />
     <ClInclude Include="Screen.h" />

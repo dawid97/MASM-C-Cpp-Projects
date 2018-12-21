@@ -3,17 +3,15 @@
 #include "Screen.h"
 #include "BankDatabase.h"
 #include "Keypad.h"
-#include "DepositSlot.h"
+#include<Windows.h>
+
 
 class Deposit :public Transaction
 {
 	double amount;
 	Keypad*keypad;
-	DepositSlot*depositSlot;
-
-	double promptForDepositAmount();
-
+	
 public:
-	Deposit(int userAccountNumber, Screen*atmScreen, BankDatabase*atmBankDatabase, Keypad*atmKeypad, DepositSlot*atmDepositSlot);
+	Deposit(int userAccountNumber, Screen*atmScreen, BankDatabase*atmBankDatabase, Keypad*atmKeypad);
 	void execute();
 };

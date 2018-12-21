@@ -10,24 +10,16 @@ class BankDatabase
     list<Account*> accounts;
 
 public:
-
 	BankDatabase();
-	void saveToFile();
-	void displayAccounts();
-	
-private:
 
-	void LoadFromFile();
+private:
+	void LoadAccounts();
+	void saveAccounts();
 
 public:
-
-	bool authenticateUser(int userAccountNumber);
-	
+    bool authenticateUser(int userAccountNumber);
 	double getAvailableBalance(int userAccountNumber);
-
 	double getTotalBalance(int userAccountNumber);
-
 	void credit(int userAccountNumber, double amount);
-
 	void debit(int userAccountNumber, double amount);
 };

@@ -9,6 +9,5 @@ Keypad::Keypad()
 int Keypad::getInput()
 {
 	cin >> nr;
-
 	return nr;
 }

@@ -10,15 +10,9 @@ public:
 
 	Account(int theAccountNumber,double theAvailableBalance, double theTotalBalane);
 
-
-	double getAvailableBalance();
-
-	double getTotalBalance();
-
-	void credit(double amount);
-
-	void debit(double amount);
-
 	int getAccountNumber();
-
+	double getAvailableBalance();
+	double getTotalBalance();
+	void credit(double amount);
+	void debit(double amount);
 };

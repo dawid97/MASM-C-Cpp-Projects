@@ -8,7 +8,6 @@ Withdrawal::Withdrawal(int userAccountNumber, Screen*atmScreen, BankDatabase*atm
 
 void Withdrawal::execute()
 {
-	cout << bankDatabase << endl;
 	bool cashDispensed = false;
 	double availableBalance = 0;
 
@@ -26,21 +25,33 @@ void Withdrawal::execute()
 				if (safe->reduceSafe(amount))
 				{
 						bankDatabase->debit(getAccountNumber(), amount);
-						bankDatabase->saveToFile();
-						safe->czyalarm();
+						safe->isAlarm();
 						cashDispensed = true;
-						screen->displayMessageLine("\nYour cash has been dispensed. Please take your cash now.");
+						screen->displayMessageLine("\nGotowka zostala wyplacona. Prosze zabrac gotowke.");
+						Sleep(3000);
+						system("cls");
 				}
 				else
-					screen->displayMessageLine("\nInsufficient cash available in the ATM");
+				{
+					screen->displayMessageLine("\nBrak dostepnej gotowki w bankomacie");
+					Sleep(3000);
+					system("cls");
+				}
 			
 			}
 			else
-				screen->displayMessageLine("\nInsufficient funds in your account.\n\nPlease choose a smaller amount.");
+			{
+				screen->displayMessageLine("\nBrak wystarczajacej ilosci gotowki na koncie.\n\nProsze wybrac mniejsza kwote.");
+				Sleep(3000);
+				system("cls");
+			}
+
 		}
 		else
 		{
-			screen->displayMessageLine("\nCanceling transaction...");
+			screen->displayMessageLine("\nKonczenie transakcji...");
+			Sleep(3000);
+			system("cls");
 			return;
 		}
 	} while (!cashDispensed);
@@ -67,13 +78,19 @@ int Withdrawal::displayMenuOfAmounts()
 		case 5:
 		case 6:
 		case 7:
+			system("cls");
 			userChoice = amounts[input];
 			break;
 		case 8:
+			system("cls");
 			userChoice = 8;
 			break;
 		default:
-			screen->displayMessageLine("\nInvalid selection. Try again");
+		{
+			screen->displayMessageLine("\nBledny wybor. Prosze sprobowac ponownie");
+			Sleep(3000);
+			system("cls");
+		}
 		}
 	}
 	return userChoice;

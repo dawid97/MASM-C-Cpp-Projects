@@ -4,14 +4,15 @@ BalanceInquiry::BalanceInquiry(int userAccountNumer, Screen*atmScreen, BankDatab
 
 void BalanceInquiry::execute()
 {
-	cout << bankDatabase << endl;
 	double availableBalance = bankDatabase->getAvailableBalance(getAccountNumber());
 	double totalBalance = bankDatabase->getTotalBalance(getAccountNumber());
 
-	screen->displayMessageLine("\nBalance Information:");
-	screen->displayMessage(" - Available balance:");
-	screen->displayDollarAmount(availableBalance);
-	screen->displayMessage("\n - Total balance:      ");
-	screen->displayDollarAmount(totalBalance);
+	screen->displayMessageLine("\nInformacje o koncie:");
+	screen->displayMessage(" - Dostepne saldo:");
+	screen->displayZlAmount(availableBalance);
+	screen->displayMessage("\n - Calkowite saldo:");
+	screen->displayZlAmount(totalBalance);
 	screen->displayMessageLine("");
+	Sleep(8000);
+	system("cls");
 }

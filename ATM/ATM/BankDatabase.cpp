@@ -1,34 +1,30 @@
 #include "BankDatabase.h"
 
+fstream & operator>>(fstream & file , list<Account*> & accounts)
+{
+	file.open("Accounts.txt", ios::in);
+	int accountNumber;
+	double availableBalance, totalBalance;
 
+	while (!file.eof())
+	{
+		file >> accountNumber >> availableBalance >> totalBalance;
+		accounts.push_back(new Account(accountNumber, availableBalance, totalBalance));
+	}
+	file.close();
+
+	return file;
+}
 
 BankDatabase::BankDatabase()
 {
-	LoadFromFile();
+	LoadAccounts();
 }
 
-void BankDatabase::LoadFromFile()
+void BankDatabase::LoadAccounts()
 {
-	fstream plik;
-	plik.open("data.txt", ios::in);
-	int accountNumber;
-	double availableBalance, totalBalance;
-	
-	while (!plik.eof())
-	{
-		plik >> accountNumber >> availableBalance >> totalBalance;
-		accounts.push_back(new Account(accountNumber,availableBalance, totalBalance));
-	}
-	plik.close();
-}
-void BankDatabase::displayAccounts()
-{
-	for (list<Account*>::iterator i = accounts.begin(); i != accounts.end(); i++)
-	{
-		cout << (*i)->getAccountNumber() << endl;
-		cout << (*i)->getAvailableBalance() << endl;
-		cout << (*i)->getTotalBalance() << endl << endl;
-	}
+	fstream file;
+	file >> accounts;
 }
 
 bool BankDatabase::authenticateUser(int userAccountNumber)
@@ -42,30 +38,32 @@ bool BankDatabase::authenticateUser(int userAccountNumber)
 	return false;
 }
 
-
-void BankDatabase::saveToFile()
+fstream & operator<<(fstream & file, list<Account*> & accounts)
 {
-	fstream plik;
-	plik.open("data.txt", ios::out);
+	file.open("Accounts.txt", ios::out);
 
 	int accountNumber;
 	double availableBalance, totalBalance;
-	//plik << list<Account>accounts;
 
 	for (list<Account*>::iterator i = accounts.begin(); i != accounts.end(); i++)
 	{
-		accountNumber =(*i)->getAccountNumber();
+		accountNumber = (*i)->getAccountNumber();
 		availableBalance = (*i)->getAvailableBalance();
 		totalBalance = (*i)->getTotalBalance();
-		plik << accountNumber << " " << availableBalance << " " << totalBalance;
+		file << accountNumber << " " << availableBalance << " " << totalBalance;
 		if ((*i) != accounts.back())
-			plik << endl;
+			file << endl;
 	}
-	plik.close();
+	file.close();
+
+	return file;
 }
 
-
-
+void BankDatabase::saveAccounts()
+{
+	fstream file;
+	file << accounts;
+}
 
 double BankDatabase::getAvailableBalance(int userAccountNumber)
 {
@@ -92,7 +90,10 @@ void BankDatabase::credit(int userAccountNumber, double amount)
 	for (list<Account*>::iterator i = accounts.begin(); i != accounts.end(); i++)
 	{
 		if ((*i)->getAccountNumber() == userAccountNumber)
+		{
 			(*i)->credit(amount);
+			saveAccounts();
+		}
 	}
 	return;
 }
@@ -102,7 +103,10 @@ void BankDatabase::debit(int userAccountNumber, double amount)
 	for (list<Account*>::iterator i = accounts.begin(); i != accounts.end(); i++)
 	{
 		if ((*i)->getAccountNumber() == userAccountNumber)
+		{
 			(*i)->debit(amount);
+			saveAccounts();
+		}
 	}
 	return;
 }

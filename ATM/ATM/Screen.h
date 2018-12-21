@@ -9,7 +9,7 @@ class Screen
 public:
 	void displayMessage(string message);
 	void displayMessageLine(string message);
-	void displayDollarAmount(double amount);
+	void displayZlAmount(double amount);
 	void displayMainMenu();
 	void displayWithdrawalMenu();
 };
