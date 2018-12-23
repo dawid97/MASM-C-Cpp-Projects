@@ -3,9 +3,20 @@
 fstream & operator>>(fstream & file, Card & card)
 {
 	file.open("Card.txt", ios::in);
-	file >> card.accountNumber >> card.pin;
-	file.close();
-	return file;
+
+	if (file.good())
+	{
+		file >> card.accountNumber >> card.pin;
+		file.close();
+		return file;
+	}
+	else
+	{
+		cout << "Blad otwarcia pliku 'Card'" << endl;
+		Sleep(3000);
+		system("cls");
+		return file;
+	}
 }
 
 CardReader::CardReader()

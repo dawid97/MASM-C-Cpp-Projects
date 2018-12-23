@@ -1,8 +1,10 @@
 #pragma once
 #include "Account.h"
+#include "Screen.h"
 #include<list>
 #include<fstream>
 #include<iostream>
+#include<Windows.h>
 using namespace std;
 
 class BankDatabase

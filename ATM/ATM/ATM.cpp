@@ -50,7 +50,7 @@ void ATM::authenticateUser()
 	}
 	else
 	{
-		screen.displayMessageLine("Bledny PIN");
+		screen.displayMessageLine("Bledny numer PIN");
 		Sleep(3000);
 		system("cls");
 	}
@@ -99,6 +99,7 @@ void ATM::performTransactions()
 		}
 		case EXIT:
 		{
+			system("cls");
 			screen.displayMessageLine("\nZamykanie systemu...");
 			Sleep(3000);
 			system("cls");

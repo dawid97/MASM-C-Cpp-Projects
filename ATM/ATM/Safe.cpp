@@ -3,17 +3,39 @@
 fstream & operator>>(fstream & file, TypeOfCash & type)
 {
 	file.open("Cash.txt", ios::in);
-	file >> type.$500 >> type.$200 >> type.$100 >> type.$50 >> type.$20;
-	file.close();
-	return file;
+
+	if (file.good())
+	{
+		file >> type.$500 >> type.$200 >> type.$100 >> type.$50 >> type.$20;
+		file.close();
+		return file;
+	}
+	else
+	{
+		cout << "Blad otwarica pliku 'Cash'!" << endl;
+		Sleep(3000);
+		system("cls");
+		return file;
+	}
 }
 
 fstream & operator<<(fstream & file, TypeOfCash & type)
 {
 	file.open("Cash.txt", ios::out);
-	file << type.$500 << endl << type.$200 << endl << type.$100 << endl << type.$50 << endl << type.$20;
-	file.close();
-	return file;
+
+	if (file.good())
+	{
+		file << type.$500 << endl << type.$200 << endl << type.$100 << endl << type.$50 << endl << type.$20;
+		file.close();
+		return file;
+	}
+	else
+	{
+		cout << "Blad otwarica pliku 'Cash'!" << endl;
+		Sleep(3000);
+		system("cls");
+		return file;
+	}
 }
 	
 Safe::Safe()
@@ -101,7 +123,17 @@ void Safe::isAlarm()
 {
 	ofstream file;
 	file.open("Alarm.txt");
-	file.close();
+
+	if (file.good())
+	{
+		file.close();
+	}
+	else
+	{
+		cout << "Blad otwarica pliku 'Alarm'" << endl;
+		Sleep(3000);
+		system("cls");
+	}
 
 	if (type.$500 < $$500 && type.$500>0)
 		greenAlarm("500zl");

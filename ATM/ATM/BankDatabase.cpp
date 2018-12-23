@@ -3,17 +3,27 @@
 fstream & operator>>(fstream & file , list<Account*> & accounts)
 {
 	file.open("Accounts.txt", ios::in);
-	int accountNumber;
-	double availableBalance, totalBalance;
 
-	while (!file.eof())
+	if (file.good())
 	{
-		file >> accountNumber >> availableBalance >> totalBalance;
-		accounts.push_back(new Account(accountNumber, availableBalance, totalBalance));
-	}
-	file.close();
+		int accountNumber;
+		double availableBalance, totalBalance;
 
-	return file;
+		while (!file.eof())
+		{
+			file >> accountNumber >> availableBalance >> totalBalance;
+			accounts.push_back(new Account(accountNumber, availableBalance, totalBalance));
+		}
+		file.close();
+		return file;
+	}
+	else
+	{
+		cout << "Blad otwarcia pliku 'Accounts'" << endl;
+		Sleep(3000);
+		system("cls");
+		return file;
+	}
 }
 
 BankDatabase::BankDatabase()
@@ -42,21 +52,30 @@ fstream & operator<<(fstream & file, list<Account*> & accounts)
 {
 	file.open("Accounts.txt", ios::out);
 
-	int accountNumber;
-	double availableBalance, totalBalance;
-
-	for (list<Account*>::iterator i = accounts.begin(); i != accounts.end(); i++)
+	if (file.good())
 	{
-		accountNumber = (*i)->getAccountNumber();
-		availableBalance = (*i)->getAvailableBalance();
-		totalBalance = (*i)->getTotalBalance();
-		file << accountNumber << " " << availableBalance << " " << totalBalance;
-		if ((*i) != accounts.back())
-			file << endl;
-	}
-	file.close();
+		int accountNumber;
+		double availableBalance, totalBalance;
 
-	return file;
+		for (list<Account*>::iterator i = accounts.begin(); i != accounts.end(); i++)
+		{
+			accountNumber = (*i)->getAccountNumber();
+			availableBalance = (*i)->getAvailableBalance();
+			totalBalance = (*i)->getTotalBalance();
+			file << accountNumber << " " << availableBalance << " " << totalBalance;
+			if ((*i) != accounts.back())
+				file << endl;
+		}
+		file.close();
+		return file;
+	}
+	else
+	{
+		cout << "Blad otwarcia pliku 'Accounts'!" << endl;
+		Sleep(3000);
+		system("cls");
+		return file;
+	}
 }
 
 void BankDatabase::saveAccounts()
