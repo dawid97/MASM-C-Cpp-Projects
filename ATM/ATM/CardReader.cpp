@@ -25,7 +25,7 @@ CardReader::CardReader()
 	file >> card;
 }
 
-int CardReader::getAccountNumber()
+inline int  CardReader::getAccountNumber()
 {
 	return card.accountNumber;
 }
