@@ -8,7 +8,7 @@ class AwariaSamochodu
 public:
 
 	virtual void info() { cout << "Awaria Samochodu!!!" << endl; };
-	virtual ~AwariaSamochodu() {}; //?
+	virtual ~AwariaSamochodu() {};
 };
 
 class AwariaSilnika:public AwariaSamochodu
@@ -44,9 +44,6 @@ int main()
 		i++;
 	}
 
-	cout << typeid(*tab[0]).name() << endl;
-	cout << typeid(AwariaSamochodu).name() << endl;
-
 	for (int i = 0; i < 9; i++)
 	{
 		try
@@ -66,20 +63,71 @@ int main()
 				throw AwariaSwiecy();
 			}
 		}
-		catch (AwariaSamochodu & e)
+		catch (AwariaSilnika e) //wazna kolejnosc blokow catch
 		{
 			e.info();
 		}
-		catch (AwariaSwiecy & e)
+		catch (AwariaSwiecy e)
 		{
 			e.info();
 		}
-		catch (AwariaSilnika & e)
+		catch (AwariaSamochodu e) 
+		{
+			e.info();
+		}
+		catch (...)
+		{
+			cout << "Blok catch, ktory lapie wszystkie wyjatki" << endl;
+		}
+	}
+
+	/////////////////////////////////////////////////////////////////
+	cout << "--------------------------------------------------" << endl;
+
+	for (int i = 0; i < 9; i++)
+	{
+		try
+		{
+			try
+			{
+				try
+				{
+					if (typeid(*tab[i]).name() == typeid(AwariaSamochodu).name())
+					{
+						throw AwariaSamochodu();
+					}
+				}
+				catch (AwariaSamochodu  e)
+				{
+					e.info();
+				}
+
+				if (typeid(*tab[i]).name() == typeid(AwariaSilnika).name())
+				{
+					throw AwariaSilnika();
+				}
+			}
+			catch (AwariaSilnika  e)
+			{
+				e.info();
+			}
+
+			if (typeid(*tab[i]).name() == typeid(AwariaSwiecy).name())
+			{
+				throw AwariaSwiecy();
+			}
+		}
+		catch (AwariaSwiecy  e)
 		{
 			e.info();
 		}
 	}
 
+	for (int i = 0; i < 9;i++)
+	{
+		delete tab[i];
+	}
+	 
 	_getch();
 	return 0;
 }
