@@ -1,6 +1,5 @@
 #pragma once
 #include<SFML/Graphics.hpp>
-#include<iostream>
 #include<vector>
 #include"Exceptions.h"
 
@@ -14,7 +13,8 @@ private:
 	std::unique_ptr<sf::Texture>backgroundTex;
 	std::vector<sf::Text> texts;
 	std::vector<sf::RectangleShape> blocks;
-	//bool enterKey;
+
+	bool enterKey;
 	int selectedItemIndex;
 	int maxNumberOfItems;
 	bool upKey, downKey;

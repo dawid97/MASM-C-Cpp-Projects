@@ -1,14 +1,13 @@
 #include "GameOver.h"
 
-
-
 GameOver::GameOver(sf::RenderWindow* window)
 {
 	this->maxNumberOfItems = 3;
 	this->selectedItemIndex = 0;
-	//this->enterKey = false;
 	this->downKey = false;
 	this->upKey = false;
+	//this->enterKey = false;
+	
 
 	this->font = std::unique_ptr<sf::Font>(new sf::Font());
 	this->gameOverText = std::unique_ptr<sf::Text>(new sf::Text());
@@ -16,6 +15,7 @@ GameOver::GameOver(sf::RenderWindow* window)
 	if (!this->font->loadFromFile("Fonts/SpaceInvader.ttf"))
 		throw LoadingError("Font loading error!");
 
+	
 	sf::RectangleShape mainBlock;
 	mainBlock.setSize(sf::Vector2f(window->getSize().x/4.f,window->getSize().y/2.5f));
 	mainBlock.setFillColor(sf::Color(180,180,180,70));
@@ -25,14 +25,14 @@ GameOver::GameOver(sf::RenderWindow* window)
 	mainBlock.setPosition(window->getSize().x / 2.f, window->getSize().y / 2.f);
 	blocks.push_back(mainBlock);
 
-	sf::RectangleShape mainMenu;
+
+	sf::RectangleShape mainMenu(mainBlock);
 	mainMenu.setSize(sf::Vector2f(mainBlock.getSize().x/1.2f,mainBlock.getSize().y/5.f));
 	mainMenu.setFillColor(sf::Color::Black);
-	mainMenu.setOutlineThickness(2.f);
-	mainMenu.setOutlineColor(sf::Color::Green);
 	mainMenu.setOrigin(mainMenu.getGlobalBounds().width / 2.f, mainMenu.getGlobalBounds().height / 2.f);
 	mainMenu.setPosition(mainBlock.getPosition().x,mainBlock.getPosition().y/1.3f);
 	blocks.push_back(mainMenu);
+
 
 	sf::RectangleShape submitScores(mainMenu);
 	submitScores.setPosition(mainBlock.getPosition().x, mainBlock.getPosition().y);
@@ -54,13 +54,13 @@ GameOver::GameOver(sf::RenderWindow* window)
 	
 
 	sf::Text mainMenuText(*gameOverText);
-	mainMenuText.setFillColor(sf::Color::Red);
+	mainMenuText.setFillColor(sf::Color(0, 191, 255));
 	mainMenuText.setString("MAIN MENU");
 	mainMenuText.setPosition(window->getSize().x / 2.f, window->getSize().y / 2.63f);
 	texts.push_back(mainMenuText);
 
 	sf::Text submitScoresText(*gameOverText);
-	submitScoresText.setString("SUBMIT SCORES");
+	submitScoresText.setString("SUBMIT SCORE");
 	sf::FloatRect boundsSubmitScores = submitScoresText.getLocalBounds();
 	sf::Vector2f centerSubmitScores(boundsSubmitScores.left + boundsSubmitScores.width / 2.f, boundsSubmitScores.top + boundsSubmitScores.height / 2.f);
 	submitScoresText.setOrigin(centerSubmitScores);
@@ -69,9 +69,6 @@ GameOver::GameOver(sf::RenderWindow* window)
 
 	sf::Text exitText(*gameOverText);
 	exitText.setString("EXIT GAME");
-	sf::FloatRect boundsExit = exitText.getLocalBounds();
-	sf::Vector2f centerExit(boundsExit.left + boundsExit.width / 2.f, boundsExit.top + boundsExit.height / 2.f);
-	exitText.setOrigin(centerExit);
 	exitText.setPosition(window->getSize().x / 2.f, window->getSize().y / 1.63f);
 	texts.push_back(exitText);
 }
@@ -99,6 +96,8 @@ void GameOver::Render(sf::RenderWindow* window)
 		window->draw(*it1);
 
 	window->draw(*this->gameOverText);
+
+
 	std::vector<sf::Text>::iterator it2;
 	for (it2 = texts.begin(); it2 < texts.end(); it2++)
 		window->draw(*it2);
@@ -110,7 +109,7 @@ void GameOver::moveUp()
 	{
 		texts[selectedItemIndex].setFillColor(sf::Color::White);
 		selectedItemIndex--;
-		texts[selectedItemIndex].setFillColor(sf::Color::Red);
+		texts[selectedItemIndex].setFillColor(sf::Color(0, 191, 255));
 		
 	}
 }
@@ -121,7 +120,7 @@ void GameOver::moveDown()
 	{
 		texts[selectedItemIndex].setFillColor(sf::Color::White);
 		selectedItemIndex++;
-		texts[selectedItemIndex].setFillColor(sf::Color::Red);
+		texts[selectedItemIndex].setFillColor(sf::Color(0, 191, 255));
 	}
 }
 

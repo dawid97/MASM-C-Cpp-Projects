@@ -30,6 +30,9 @@
     <ClCompile Include="SubmitScores.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Highscores.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Menu.h">
@@ -45,6 +48,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="SubmitScores.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Highscores.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

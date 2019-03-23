@@ -4,13 +4,11 @@ MainMenu::MainMenu(sf::RenderWindow* window)
 {
 	this->maxNumberOfItems = 3;
 	this->selectedItemIndex = 0;
-	//this->enterKey = false;
 	this->downKey = false;
 	this->upKey = false;
-
+	//this->enterKey = false;
 
 	this->background = std::unique_ptr<sf::Sprite>(new sf::Sprite());
-
 	this->backgroundTex = std::unique_ptr<sf::Texture>(new sf::Texture());
 	if (!backgroundTex->loadFromFile("Textures/background.png"))
 		throw LoadingError("Background loading error");
@@ -21,13 +19,32 @@ MainMenu::MainMenu(sf::RenderWindow* window)
 	background->setOrigin(background->getLocalBounds().width / 2.f, background->getLocalBounds().height / 2.f);
 	background->setPosition(window->getSize().x/2.f,window->getSize().y/2.f);
 
+
 	this->font = std::unique_ptr<sf::Font>(new sf::Font());
 	if (!this->font->loadFromFile("Fonts/SpaceInvader.ttf"))
 		throw LoadingError("Font loading error!");
 
 
 	this->title = std::unique_ptr<sf::Text>(new sf::Text());
+	title->setFont(*font);
+	title->setCharacterSize(60);
+	title->setFillColor(sf::Color::White);
+	title->setString("SPACE INVADERS");
+	sf::FloatRect boundsTitle = title->getLocalBounds();
+	sf::Vector2f centerTitle(boundsTitle.left + boundsTitle.width / 2.f, boundsTitle.top + boundsTitle.height / 2.f);
+	title->setOrigin(centerTitle);
+	title->setPosition(window->getSize().x / 2.f, window->getSize().y / 7.f);
+
+
 	this->chooseActionText = std::unique_ptr<sf::Text>(new sf::Text());
+	chooseActionText->setFont(*font);
+	chooseActionText->setCharacterSize(17);
+	chooseActionText->setFillColor(sf::Color::White);
+	chooseActionText->setString("CHOOSE ACTION");
+	sf::FloatRect boundsChooseAction = chooseActionText->getLocalBounds();
+	sf::Vector2f centerChooseAction(boundsChooseAction.left + boundsChooseAction.width / 2.f, boundsChooseAction.top + boundsChooseAction.height / 2.f);
+	chooseActionText->setOrigin(centerChooseAction);
+	chooseActionText->setPosition(window->getSize().x / 2.f, window->getSize().y / 3.15f);
 
 
 	sf::RectangleShape mainBlock;
@@ -39,11 +56,10 @@ MainMenu::MainMenu(sf::RenderWindow* window)
 	mainBlock.setPosition(window->getSize().x / 2.f, window->getSize().y / 2.f);
 	blocks.push_back(mainBlock);
 
-	sf::RectangleShape playGame;
+
+	sf::RectangleShape playGame(mainBlock);
 	playGame.setSize(sf::Vector2f(mainBlock.getSize().x / 1.2f, mainBlock.getSize().y / 5.f));
 	playGame.setFillColor(sf::Color::Black);
-	playGame.setOutlineThickness(2.f);
-	playGame.setOutlineColor(sf::Color::Green);
 	playGame.setOrigin(playGame.getGlobalBounds().width / 2.f, playGame.getGlobalBounds().height / 2.f);
 	playGame.setPosition(mainBlock.getPosition().x, mainBlock.getPosition().y / 1.3f);
 	blocks.push_back(playGame);
@@ -56,27 +72,9 @@ MainMenu::MainMenu(sf::RenderWindow* window)
 	exitGame.setPosition(mainBlock.getPosition().x, mainBlock.getPosition().y / 0.81f);
 	blocks.push_back(exitGame);
 
-	title->setFont(*font);
-	title->setCharacterSize(60);
-	title->setFillColor(sf::Color::White);
-	title->setString("SPACE INVADERS");
-	sf::FloatRect boundsTitle = title->getLocalBounds();
-	sf::Vector2f centerTitle(boundsTitle.left + boundsTitle.width / 2.f, boundsTitle.top + boundsTitle.height / 2.f);
-	title->setOrigin(centerTitle);
-	title->setPosition(window->getSize().x / 2.f, window->getSize().y / 7.f);
-
-	chooseActionText->setFont(*font);
-	chooseActionText->setCharacterSize(17);
-	chooseActionText->setFillColor(sf::Color::White);
-	chooseActionText->setString("CHOOSE ACTION");
-	sf::FloatRect boundsGameOver = chooseActionText->getLocalBounds();
-	sf::Vector2f centerGameOver(boundsGameOver.left + boundsGameOver.width / 2.f, boundsGameOver.top + boundsGameOver.height / 2.f);
-	chooseActionText->setOrigin(centerGameOver);
-	chooseActionText->setPosition(window->getSize().x / 2.f, window->getSize().y / 3.15f);
-
 
 	sf::Text playGameText(*chooseActionText);
-	playGameText.setFillColor(sf::Color::Red);
+	playGameText.setFillColor(sf::Color(0, 191, 255));
 	playGameText.setString("PLAY GAME");
 	sf::FloatRect boundsPlayGame = playGameText.getLocalBounds();
 	sf::Vector2f centerPlayGame(boundsPlayGame.left + boundsPlayGame.width / 2.f, boundsPlayGame.top + boundsPlayGame.height / 2.f);
@@ -93,11 +91,9 @@ MainMenu::MainMenu(sf::RenderWindow* window)
 	highScoresText.setPosition(window->getSize().x / 2.f, window->getSize().y / 2.f);
 	texts.push_back(highScoresText);
 
-	sf::Text exitText(*chooseActionText);
+	sf::Text exitText(playGameText);
 	exitText.setString("EXIT GAME");
-	sf::FloatRect boundsExit = exitText.getLocalBounds();
-	sf::Vector2f centerExit(boundsExit.left + boundsExit.width / 2.f, boundsExit.top + boundsExit.height / 2.f);
-	exitText.setOrigin(centerExit);
+	exitText.setFillColor(sf::Color::White);
 	exitText.setPosition(window->getSize().x / 2.f, window->getSize().y / 1.63f);
 	texts.push_back(exitText);
 }
@@ -138,8 +134,7 @@ void MainMenu::moveUp()
 	{
 		texts[selectedItemIndex].setFillColor(sf::Color::White);
 		selectedItemIndex--;
-		texts[selectedItemIndex].setFillColor(sf::Color::Red);
-
+		texts[selectedItemIndex].setFillColor(sf::Color(0, 191, 255));//
 	}
 }
 
@@ -149,7 +144,7 @@ void MainMenu::moveDown()
 	{
 		texts[selectedItemIndex].setFillColor(sf::Color::White);
 		selectedItemIndex++;
-		texts[selectedItemIndex].setFillColor(sf::Color::Red);
+		texts[selectedItemIndex].setFillColor(sf::Color(0, 191, 255));
 	}
 }
 

@@ -1,12 +1,11 @@
 #pragma once
 #include<SFML/Graphics.hpp>
-#include<iostream>
 #include<vector>
 #include"Exceptions.h"
 
 class GameOver
 {
-private:
+protected:
 	std::unique_ptr<sf::Font>font;
 	std::unique_ptr<sf::Text>gameOverText;
 	std::vector<sf::Text> texts;
