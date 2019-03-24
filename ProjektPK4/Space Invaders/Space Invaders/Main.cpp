@@ -5,6 +5,7 @@
 #include"MainMenu.h"
 #include"SubmitScores.h"
 #include"Highscores.h"
+#include"Player.h"
 #include<conio.h>
 #include<vld.h>
 
@@ -15,6 +16,7 @@ constexpr int ScreenHeight = 600;
 int main()
 {
 	sf::RenderWindow window(sf::VideoMode(ScreenWidth, ScreenHeight), "Hello world");
+	window.setFramerateLimit(60);
 
 	/*std::unique_ptr<sf::Font>font(new sf::Font);
 
@@ -30,8 +32,9 @@ int main()
 	//GameOver gameOver(&window);
 	//std::unique_ptr<GameOver>gameOver(new GameOver(&window));
 	//std::unique_ptr<MainMenu>mainMenu(new MainMenu(&window));
-	std::unique_ptr<SubmitScores>submitScores(new SubmitScores(&window));
-	std::unique_ptr<Highscores>highscores(new Highscores(&window));
+	//std::unique_ptr<SubmitScores>submitScores(new SubmitScores(&window));
+	//std::unique_ptr<Highscores>highscores(new Highscores(&window));
+	std::unique_ptr<Player>player(new Player(&window));
 
 	//SubmitScores submitScores(&window);
 
@@ -50,7 +53,7 @@ int main()
 				window.close();
 			if(event.type == sf::Event::TextEntered)
 			{
-				//submitScores->updateUserName(&window,&event);
+				//ubmitScores->updateUserName(&window,&event);
 			}
 			//}//end switch
 		}
@@ -66,8 +69,9 @@ int main()
 			//mainMenu->Render(&window);
 			//submitScores->Update(&window);
 			//submitScores->Render(&window);
-			highscores->Render(&window);
-			
+			//highscores->Render(&window);
+			player->Render(&window);
+			player->Update(&window);
 
 
 			//window.draw(*nameText);
