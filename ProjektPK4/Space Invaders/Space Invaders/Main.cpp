@@ -34,7 +34,8 @@ int main()
 	//std::unique_ptr<MainMenu>mainMenu(new MainMenu(&window));
 	//std::unique_ptr<SubmitScores>submitScores(new SubmitScores(&window));
 	//std::unique_ptr<Highscores>highscores(new Highscores(&window));
-	std::unique_ptr<Player>player(new Player(&window));
+
+	Player player(30.f,50.f);
 
 	//SubmitScores submitScores(&window);
 
@@ -70,8 +71,8 @@ int main()
 			//submitScores->Update(&window);
 			//submitScores->Render(&window);
 			//highscores->Render(&window);
-			player->Render(&window);
-			player->Update(&window);
+			player.Render(&window);
+			player.Update(&window);
 
 
 			//window.draw(*nameText);

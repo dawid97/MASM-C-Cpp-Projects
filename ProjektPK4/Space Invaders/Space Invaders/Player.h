@@ -1,20 +1,20 @@
 #pragma once
 #include<SFML/Graphics.hpp>
 #include "Exceptions.h"
+#include"Bullet.h"
 
 class Player
 {
 private:
-	std::unique_ptr<sf::Sprite>player;
-	std::unique_ptr<sf::Texture>playerTex;
-	int maxSpeed;
+	sf::Sprite player;
+	sf::Texture playerTex;
+	std::vector<Bullet> bullets;
+	float maxSpeed;
+	float shootTimer;
+	sf::Vector2f playerPosition;
 	
 public:
-	//Ship(Score* score, EntityManager* manager, float x, float y);
-	//void Update(sf::RenderWindow* window);
-	//void Collision(Entity* entity);
-
-	Player(sf::RenderWindow*window);
+	Player(float x,float y);
 	void Render(sf::RenderWindow*window);
 	void Update(sf::RenderWindow*window);
 	~Player();

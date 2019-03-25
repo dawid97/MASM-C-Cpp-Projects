@@ -2,21 +2,21 @@
 
 
 
-Player::Player(sf::RenderWindow*window)
+Player::Player(float x,float y)
 {
+	this->shootTimer = 20.f;
 	this->maxSpeed = 5;
+	this->playerPosition = sf::Vector2f(x, y);
 
-	this->player = std::unique_ptr<sf::Sprite>(new sf::Sprite());
-	this->playerTex = std::unique_ptr<sf::Texture>(new sf::Texture());
 
-	if (!playerTex->loadFromFile("Textures/ship.png"))
+	if (!playerTex.loadFromFile("Textures/ship.png"))
 		throw LoadingError("ship loading error");
 
 
-	player->setTexture(*playerTex);
-	player->setScale(sf::Vector2f(0.08f, 0.08f));
-	player->setOrigin(player->getLocalBounds().width / 2.f, player->getLocalBounds().height / 2.f);
-	player->setPosition(window->getSize().x / 2.f, window->getSize().y / 1.07f);
+	player.setTexture(playerTex);
+	player.setScale(sf::Vector2f(0.08f, 0.08f));
+	player.setOrigin(player.getLocalBounds().width / 2.f, player.getLocalBounds().height / 2.f);
+	player.setPosition(x,y);
 }
 
 
@@ -27,58 +27,61 @@ Player::~Player()
 
 void Player::Render(sf::RenderWindow*window)
 {
-	window->draw(*player);
+	//player
+	window->draw(player);
+
+	//bullets
+	std::vector<Bullet>::iterator it;
+	for (it=bullets.begin(); it < bullets.end(); it++)
+	{
+		it->render(window);
+	}
 }
 
 void Player::Update(sf::RenderWindow*window)
 {
+	//move right
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		player->move(5.f, 0.f);
-		
+		player.move(maxSpeed, 0.f);
+	
+	//move left
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-		player->move(-5.f, 0.f);
+		player.move(-maxSpeed, 0.f);
 
-	if (player->getPosition().x-player->getGlobalBounds().width/2.f < 0)
-		player->setPosition(player->getGlobalBounds().width/2.f, player->getPosition().y);
-	if (player->getPosition().x + player->getGlobalBounds().width/2.f > window->getSize().x)
-		player->setPosition(window->getSize().x-player->getGlobalBounds().width/2.f,player->getPosition().y);
+	//collision left screen
+	if (player.getPosition().x-player.getGlobalBounds().width/2.f < 0)
+		player.setPosition(player.getGlobalBounds().width/2.f, player.getPosition().y);
+
+	//collision right screen
+	if (player.getPosition().x + player.getGlobalBounds().width/2.f > window->getSize().x)
+		player.setPosition(window->getSize().x-player.getGlobalBounds().width/2.f,player.getPosition().y);
+
+	//update shooting
+	if (shootTimer < 20.f)
+		shootTimer += 1.f;
+
+	//shooting
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && shootTimer >= 20)
+	{
+		this->bullets.push_back(Bullet(this->playerPosition));
+
+
+		//reset timer
+		shootTimer = 0.f;
+	}
+
+	std::vector<Bullet>::iterator it;
+
+	for (it = bullets.begin(); it<bullets.end(); it++)
+	{
+		it->move(sf::Vector2f(0.f, -5.f));
+
+		//bullets out of window
+		if (it->getPosition().x > window->getSize().x)
+		{
+			bullets.erase(bullets.begin() + std::distance(bullets.begin(),it)); //moze powodowac blad
+			break;
+		}
+	}
 }
 
-//Ship::Ship(Score* score, EntityManager* manager, float x, float y)
-//{
-//	this->active = 1;
-//	this->groupId = 1;
-//	this->Load("ship.png");
-//	this->setColor(sf::Color::Green);
-//
-//	this->setPosition(x - this->getGlobalBounds().width / 2, y - this->getGlobalBounds().height / 2);
-//	this->space = false;
-//
-//	this->manager = manager;
-//	this->score = score;
-//}
-//
-//void Ship::Update(sf::RenderWindow* window)
-//{
-//	this->velocity.x = (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right) - sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left)) * PLAYER_SPEED;
-//	if (!this->space && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
-//	{
-//		if (playerAmmo > 0)
-//		{
-//			this->manager->Add("bullet", new Bullet(this->score, this->getPosition().x, this->getPosition().y - 32, -1, true));
-//			playerAmmo -= 1;
-//		}
-//	}
-//	this->space = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space);
-//	Entity::Update(window);
-//}
-//
-//void Ship::Collision(Entity* entity)
-//{
-//	switch (entity->GroupID())
-//	{
-//	case 2:
-//		gameOver = true;
-//		break;
-//	}
-//}
