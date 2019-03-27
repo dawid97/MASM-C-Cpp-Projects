@@ -4,12 +4,13 @@
 
 Bullet::Bullet(sf::Vector2f position)
 {
-
-	if (!bulletTex.loadFromFile("Textures/bullet.png"))
+	this->bulletTex=std::shared_ptr<sf::Texture>(new sf::Texture);
+	if (!bulletTex->loadFromFile("Textures/bullet.png"))
 		throw LoadingError("Bullet loading error");
 
-	bullet.setTexture(bulletTex);
-	bullet.setScale(sf::Vector2f(0.8f, 1.f));
+	bullet.setTexture(*bulletTex);
+	bullet.setScale(sf::Vector2f(0.1f, 0.2f));
+	bullet.setColor(sf::Color::Green);
 	bullet.setOrigin(bullet.getLocalBounds().width / 2.f, bullet.getLocalBounds().height / 2.f);
 	bullet.setPosition(position);
 }

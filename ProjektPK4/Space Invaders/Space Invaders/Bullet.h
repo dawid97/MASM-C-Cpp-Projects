@@ -6,7 +6,7 @@ class Bullet
 {
 private:
 	sf::Sprite bullet;
-	sf::Texture bulletTex;
+	std::shared_ptr<sf::Texture>bulletTex;
 public:
 
 	Bullet(sf::Vector2f position);

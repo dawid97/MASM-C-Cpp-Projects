@@ -2,21 +2,32 @@
 #include<SFML/Graphics.hpp>
 #include "Exceptions.h"
 #include"Bullet.h"
+#include"Live.h"
+#include"Shield.h"
 
 class Player
 {
 private:
-	sf::Sprite player;
-	sf::Texture playerTex;
+	std::unique_ptr<sf::Sprite>player;
+	std::unique_ptr<sf::Texture>playerTex;
 	std::vector<Bullet> bullets;
+	std::vector<Live> lives;
+	std::vector<Shield> shields;
 	float maxSpeed;
 	float shootTimer;
-	sf::Vector2f playerPosition;
+	
+	void renderBullets(sf::RenderWindow*window);
+	void renderLives(sf::RenderWindow*window);
+	void renderShields(sf::RenderWindow*window);
+	void collisionScreen(sf::RenderWindow*window);
+	void move(sf::RenderWindow*window);
+	void shoot();
 	
 public:
-	Player(float x,float y);
-	void Render(sf::RenderWindow*window);
-	void Update(sf::RenderWindow*window);
+	Player(sf::Vector2f position);
+	sf::Vector2f getPosition();
+	void render(sf::RenderWindow*window);
+	void update(sf::RenderWindow*window);
 	~Player();
 };
 
