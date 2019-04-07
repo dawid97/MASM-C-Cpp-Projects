@@ -13,6 +13,7 @@ public:
 	void move(sf::Vector2f xy);
 	sf::Vector2f getPosition();
 	void render(sf::RenderWindow*window);
+	bool isIntersects(sf::FloatRect object);
 	~Bullet();
 };
 

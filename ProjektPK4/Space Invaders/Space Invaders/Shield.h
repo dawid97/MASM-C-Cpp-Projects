@@ -5,14 +5,16 @@
 class Shield
 {
 private:
-	std::shared_ptr<sf::Image> shieldImage;
-	std::shared_ptr<sf::Sprite> shield;
+	sf::Sprite shield;
 	std::shared_ptr<sf::Texture> shieldTex;
-
-	//std::shared_ptr<sf::Texture>shieldTex;
+	int hp;
 public:
 	void render(sf::RenderWindow*window);
+	sf::FloatRect getGlobalBounds();
 	Shield(sf::Vector2f position);
+	sf::Vector2f getPosition();
+	void removeLife();
+	int getHp();
 	~Shield();
 };
 

@@ -4,9 +4,16 @@
 
 Player::Player(sf::Vector2f position)
 {
-
-	this->shootTimer = 20.f;
+	this->shootTimer = 35.f;
 	this->maxSpeed = 5;
+
+	//sound
+	this->soundBuffer = std::unique_ptr<sf::SoundBuffer>(new sf::SoundBuffer);
+	if (!soundBuffer->loadFromFile("Sounds/shoot.wav"))
+		throw LoadingError("sound shoot loading error");
+
+	this->shootSound = std::unique_ptr<sf::Sound>(new sf::Sound);
+	this->shootSound->setBuffer(*soundBuffer);
 
 	//ship
 	this->playerTex=std::unique_ptr<sf::Texture>(new sf::Texture);
@@ -14,9 +21,9 @@ Player::Player(sf::Vector2f position)
 		throw LoadingError("ship loading error");
 
 	//lives
-	this->lives.push_back(Live(sf::Vector2f(655.f, 30.f)));
-	this->lives.push_back(Live(sf::Vector2f(700.f, 30.f)));
-	this->lives.push_back(Live(sf::Vector2f(745.f, 30.f)));
+	this->lifes.push_back(Life(sf::Vector2f(670.f, 30.f)));
+	this->lifes.push_back(Life(sf::Vector2f(715.f, 30.f)));
+	this->lifes.push_back(Life(sf::Vector2f(760.f, 30.f)));
 
 	//player
 	this->player = std::unique_ptr<sf::Sprite>(new sf::Sprite);
@@ -24,12 +31,6 @@ Player::Player(sf::Vector2f position)
 	player->setScale(sf::Vector2f(0.04f, 0.04f));
 	player->setOrigin(player->getLocalBounds().width / 2.f, player->getLocalBounds().height / 2.f);
 	player->setPosition(position);
-
-	//shields
-	this->shields.push_back(Shield(sf::Vector2f(700.f, 600.f)));
-	this->shields.push_back(Shield(sf::Vector2f(500.f, 600.f)));
-	this->shields.push_back(Shield(sf::Vector2f(300.f, 600.f)));
-	this->shields.push_back(Shield(sf::Vector2f(100.f, 600.f)));
 }
 
 sf::Vector2f Player::getPosition()
@@ -43,14 +44,7 @@ Player::~Player()
 
 }
 
-void Player::renderShields(sf::RenderWindow*window)
-{
-	std::vector<Shield>::iterator it;
-	for (it = shields.begin(); it < shields.end(); it++)
-	{
-		it->render(window);
-	}
-}
+
 
 void Player::renderBullets(sf::RenderWindow*window)
 {
@@ -62,10 +56,10 @@ void Player::renderBullets(sf::RenderWindow*window)
 	std::cout << bullets.size() << std::endl;
 }
 
-void Player::renderLives(sf::RenderWindow*window)
+void Player::renderLifes(sf::RenderWindow*window)
 {
-	std::vector<Live>::iterator it;
-	for (it = lives.begin(); it < lives.end(); it++)
+	std::vector<Life>::iterator it;
+	for (it = lifes.begin(); it < lifes.end(); it++)
 	{
 		it->render(window);
 	}
@@ -76,8 +70,7 @@ void Player::render(sf::RenderWindow*window)
 	window->draw(*player);
 
 	this->renderBullets(window);
-	this->renderLives(window);
-	this->renderShields(window);
+	this->renderLifes(window);
 }
 
 void Player::collisionScreen(sf::RenderWindow*window)
@@ -118,13 +111,14 @@ void Player::move(sf::RenderWindow*window)
 void Player::shoot()
 {
 	//update shooting
-	if (shootTimer < 20.f)
+	if (shootTimer < 35.f)
 		shootTimer += 1.f;
 
 	//shooting
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && shootTimer >= 20)
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && shootTimer >= 35)
 	{
 		this->bullets.push_back(Bullet(this->getPosition()));
+		this->shootSound->play();
 
 		//reset timer
 		shootTimer = 0.f;
@@ -138,4 +132,22 @@ void Player::update(sf::RenderWindow*window)
 	this->collisionScreen(window);
 	this->shoot();
 }
+
+size_t Player::getBulletsSize()
+{
+	return this->bullets.size();
+}
+
+Bullet Player::getBullet(size_t index)
+{
+	return this->bullets[index];
+}
+
+void Player::removeBullet(size_t index)
+{
+	this->bullets.erase(bullets.begin() + index);
+}
+
+
+
 

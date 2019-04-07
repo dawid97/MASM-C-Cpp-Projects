@@ -11,7 +11,7 @@ Bullet::Bullet(sf::Vector2f position)
 	bullet.setTexture(*bulletTex);
 	bullet.setScale(sf::Vector2f(0.1f, 0.2f));
 	bullet.setColor(sf::Color::Green);
-	bullet.setOrigin(bullet.getLocalBounds().width / 2.f, bullet.getLocalBounds().height / 2.f);
+	bullet.setOrigin(bullet.getLocalBounds().width / 2.f, 0.f);
 	bullet.setPosition(position);
 }
 
@@ -35,4 +35,9 @@ sf::Vector2f Bullet::getPosition()
 void Bullet::render(sf::RenderWindow*window)
 {
 	window->draw(this->bullet);
+}
+
+bool Bullet::isIntersects(sf::FloatRect object)
+{
+	return this->bullet.getGlobalBounds().intersects(object);
 }
