@@ -9,17 +9,29 @@ class Game
 {
 private:
 	std::unique_ptr<Player>player;
+	
 	std::vector<Shield> shields;
-	std::unique_ptr<UI> ui;
-	std::unique_ptr<Enemy> enemy;
-	std::unique_ptr<GameOver>gameOver;
-	bool gameOv;
+	std::vector<Enemy> enemies;
+
+
+	std::unique_ptr<UI> ui;//
+	
+
+	
+	void addEnemies();
+	void addShields();
+
+
 	void renderShields(sf::RenderWindow*window);
+	void renderEnemies(sf::RenderWindow*window);
+	void enemiesChangeTextures();
+	void moveEnemies(float step);
+	void stepDownEnemies(float step);
+
 	void updateShields();
 public:
 	void mainGame(sf::RenderWindow*window);
 	Game(sf::RenderWindow*window);
 	void UpdateEnemies(sf::RenderWindow*window);
-	~Game();
 };
 

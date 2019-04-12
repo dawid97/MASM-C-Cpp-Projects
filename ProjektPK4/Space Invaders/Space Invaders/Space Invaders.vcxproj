@@ -131,7 +131,7 @@
     <ClCompile Include="Game.cpp" />
     <ClCompile Include="GameOver.cpp" />
     <ClCompile Include="Highscores.cpp" />
-    <ClCompile Include="Life.cpp" />
+    <ClCompile Include="Live.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
     <ClCompile Include="Menu.cpp" />
@@ -147,7 +147,7 @@
     <ClInclude Include="Game.h" />
     <ClInclude Include="GameOver.h" />
     <ClInclude Include="Highscores.h" />
-    <ClInclude Include="Life.h" />
+    <ClInclude Include="Live.h" />
     <ClInclude Include="MainMenu.h" />
     <ClInclude Include="Menu.h" />
     <ClInclude Include="Player.h" />

@@ -7,13 +7,16 @@ class Bullet
 private:
 	sf::Sprite bullet;
 	std::shared_ptr<sf::Texture>bulletTex;
-public:
+	float speed;
 
-	Bullet(sf::Vector2f position);
-	void move(sf::Vector2f xy);
-	sf::Vector2f getPosition();
+public:
+	Bullet(float speed,sf::Vector2f position,sf::Color color, sf::Vector2f scale, std::string fileNameTex);
+	
+
 	void render(sf::RenderWindow*window);
+	void move(sf::Vector2f position);
 	bool isIntersects(sf::FloatRect object);
-	~Bullet();
+	sf::Vector2f getPosition();
+	float getSpeed();
 };
 

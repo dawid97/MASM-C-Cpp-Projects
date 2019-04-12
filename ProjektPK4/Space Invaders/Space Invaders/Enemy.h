@@ -6,53 +6,47 @@
 class Enemy
 {
 private:
-	std::vector<sf::Sprite> enemies1;
-	std::vector<sf::Sprite> enemies2;
-	std::vector<sf::Sprite> enemies3;
+	sf::Sprite enemy;
+	std::string enemyType;
+	int currentTexture;
 
-	std::vector<sf::Texture> enemiesTex1;
-	std::vector<sf::Texture> enemiesTex2;
-	std::vector<sf::Texture> enemiesTex3;
+	static std::vector<sf::Texture> enemyTextures;
+	static std::vector<sf::SoundBuffer> soundsBuffer;
+	static std::vector<sf::Sound> sounds;
 
-	std::shared_ptr<sf::SoundBuffer>soundBuffer;
-	std::vector<sf::SoundBuffer> soundBufferVelocity;
-	std::unique_ptr<sf::Sound>invaderKilledSound;
-	std::vector<sf::Sound> soundVelocity;
+	static float maxSpeed;
+	static int moveTimer;
+	static int currentMoveTimer;
+	static int textureFlag;
+	
+	void enemyInitialization(sf::Vector2f scale, sf::Vector2f position);
 
-	int moveTimer;
-	int currentMoveTimer;
-	int speedCounter;
-	int currentTextureIndex;
-	int maxSpeed;
-
-
-	void texturesInitialization();
-	sf::Sprite enemyInitialization(sf::Texture & enemyTextures, sf::Vector2f position);
-	void SoundInitialization();
-	void enemyInitialization();
 public:
-	void renderEnemies(sf::RenderWindow*window);
-	size_t getSizeEnemies1();
-	size_t getSizeEnemies2();
-	size_t getSizeEnemies3();
-	void removeEnemyEnemies1(size_t index);
-	void removeEnemyEnemies2(size_t index);
-	void removeEnemyEnemies3(size_t index);
-	sf::Sprite getEnemyEnemies1(size_t index);
-	sf::Sprite getEnemyEnemies2(size_t index);
-	sf::Sprite getEnemyEnemies3(size_t index);
-	void move(float step);
-	void IncrementSpeedCounter();
-	void ResetSpeedCounter();
-	int getCurrentMoveTimer();
-	void decrementMoveTimer(int value);
-	int getMaxSpeed();
-	void moveDown(float step);
-	void playInvaderKilledSound();
-	int getSpeedCounter();
-	void changeTextures();
-	void changeDirection();
-	Enemy();
-	~Enemy();
+	Enemy(sf::Vector2f position,sf::Vector2f scale,std::string enemyType);
+
+	static void texturesInitialization();
+	static void soundsInitialization();
+	static float getMaxSpeed();
+	static int getCurrentMoveTimer();
+	static int getMoveTimer();
+	static void resetCurrentMoveTimer();
+	static void incrementCurrentMoveTimer();
+	static void changeDirection();
+	static void playInvaderKilledSound();
+	static void changeTextureFlag();
+	static int getTextureFlag();
+	static void playInvaderMoveSound();
+	void render(sf::RenderWindow*window);
+	void setPosition(sf::Vector2f position);
+	void setTexture(int index);
+	int getCurrentTexture();
+	sf::FloatRect getGlobalBounds();
+	sf::Vector2f getPosition();
+	std::string getEnemyType();
 };
+
+
+
+
+
 

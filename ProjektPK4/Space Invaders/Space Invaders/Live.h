@@ -1,13 +1,13 @@
 #pragma once
 #include<sfml/Graphics.hpp>
-class Life
+class Live
 {
 private:
-	sf::Sprite life;
+	sf::Sprite live;
 	std::shared_ptr<sf::Texture>lifeTex;
 public:
-	Life(sf::Vector2f position);
+	Live(sf::Vector2f position, sf::Vector2f scale, sf::Color color, std::string liveTex);
+
 	void render(sf::RenderWindow*window);
-	~Life();
 };
 
