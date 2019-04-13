@@ -26,14 +26,14 @@ private:
 	void renderLifes(sf::RenderWindow*window);
 
 	
-	
 public:
 	UI();
-	void removeShieldsText(size_t index);
+	void removeLive();
 	void render(sf::RenderWindow*window);
-	void updateShieldLife(size_t index, int lifeScore,sf::Vector2f shieldPosition);
-	void updateScore(int score); 
+	void updateShieldLife(size_t index, int lifeScore, sf::Vector2f shieldPosition);
+	void updateScore(int score);
+	void removeShieldsText(size_t index);
 	void removeShieldsTexts();
-	void shieldsTextsInitialization();
+	void addShieldsTexts();
 };
 

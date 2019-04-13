@@ -3,7 +3,7 @@
 void Enemy::enemyInitialization(sf::Vector2f scale, sf::Vector2f position)
 {
 	this->enemy.setScale(scale);
-	this->enemy.setPosition(position);
+	
 
 	if (enemyType == "squid")
 	{
@@ -20,6 +20,9 @@ void Enemy::enemyInitialization(sf::Vector2f scale, sf::Vector2f position)
 		this->currentTexture = 4;
 		this->enemy.setTexture(this->enemyTextures[4]);
 	}
+
+	this->enemy.setOrigin(this->enemy.getLocalBounds().width / 2.f, this->enemy.getLocalBounds().height / 2.f);
+	this->enemy.setPosition(position);
 }
 
 Enemy::Enemy(sf::Vector2f position,sf::Vector2f scale,std::string enemyType)
@@ -29,11 +32,16 @@ Enemy::Enemy(sf::Vector2f position,sf::Vector2f scale,std::string enemyType)
 }
 
 float Enemy::maxSpeed = 10;
-int Enemy::moveTimer = 50;
+int Enemy::moveTimer = 53;
 int Enemy::currentMoveTimer = Enemy::moveTimer;
 int Enemy::textureFlag = 0;
 
+int Enemy::shootTimer = 5;
+int Enemy::currentShootTimer = Enemy::shootTimer;
+
 std::vector<sf::Texture> Enemy::enemyTextures;
+
+std::vector<Bullet> Enemy::bullets;
 
 void Enemy::texturesInitialization()
 {
@@ -73,6 +81,18 @@ void Enemy::texturesInitialization()
 	//octopus [5]
 	if (!enemyTex.loadFromFile("Textures/enemy32.png"))
 		throw LoadingError("enemy texture loading error");
+
+	Enemy::enemyTextures.push_back(sf::Texture(enemyTex));
+
+	//bulletEnemy1 [6]
+	if (!enemyTex.loadFromFile("Textures/bulletEnemy1.png"))
+		throw LoadingError("bullet1 texture loading error");
+
+	Enemy::enemyTextures.push_back(sf::Texture(enemyTex));
+
+	//bulletEnemy2 [7]
+	if (!enemyTex.loadFromFile("Textures/bulletEnemy2.png"))
+		throw LoadingError("bullet2 texture loading error");
 
 	Enemy::enemyTextures.push_back(sf::Texture(enemyTex));
 }
@@ -177,9 +197,21 @@ int Enemy::getTextureFlag()
 	return Enemy::textureFlag;
 }
 
-void Enemy::playInvaderMoveSound()
+void Enemy::playInvaderMoveSound(size_t vectorSize)
 {
-	Enemy::sounds[1].play();//poprawic funkcje zeby odpalala rozne dzwieki dla roznego rozmiaru wektora
+	if (vectorSize <= 50 && vectorSize >= 30)
+		Enemy::sounds[1].play();
+	else if (vectorSize <= 29 && vectorSize >= 20)
+		Enemy::sounds[2].play();
+	else if (vectorSize <= 19 && vectorSize >= 10)
+		Enemy::sounds[3].play();
+	else if (vectorSize <= 9 && vectorSize >= 1)
+		Enemy::sounds[4].play();
+}
+
+void Enemy::decrementMoveTimer()
+{
+	Enemy::moveTimer--;
 }
 
 void Enemy::render(sf::RenderWindow*window)
@@ -222,3 +254,52 @@ std::string Enemy::getEnemyType()
 	return this->enemyType;
 }
 
+void Enemy::renderBullets(sf::RenderWindow*window)
+{
+	std::vector<Bullet>::iterator it;
+	for (it = bullets.begin(); it < bullets.end(); it++)
+	{
+		it->render(window);
+	}
+	std::cout << bullets.size() << std::endl;
+}
+
+int Enemy::getCurrentShootTimer()
+{
+	return Enemy::currentShootTimer;
+}
+
+int Enemy::getShootTimer()
+{
+	return Enemy::shootTimer;
+}
+
+void Enemy::incrementCurrentShootTimer()
+{
+	Enemy::currentShootTimer++;
+}
+
+void Enemy::resetCurrentShootTimer()
+{
+	Enemy::currentShootTimer = 0;
+}
+
+void Enemy::incrementShootTimer()
+{
+	Enemy::shootTimer++;
+}
+
+void Enemy::setMoveTimer(int value)
+{
+	Enemy::moveTimer = value;
+}
+
+void Enemy::setShootTimer(int value)
+{
+	Enemy::shootTimer = value;
+}
+
+void Enemy::setTextureFlag(int value)
+{
+	Enemy::textureFlag = value;
+}

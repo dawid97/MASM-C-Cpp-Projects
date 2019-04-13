@@ -10,7 +10,7 @@ private:
 	float speed;
 
 public:
-	Bullet(float speed,sf::Vector2f position,sf::Color color, sf::Vector2f scale, std::string fileNameTex);
+	Bullet(float speed,sf::Vector2f position, sf::Vector2f scale, std::string fileNameTex);
 	
 
 	void render(sf::RenderWindow*window);
@@ -18,5 +18,6 @@ public:
 	bool isIntersects(sf::FloatRect object);
 	sf::Vector2f getPosition();
 	float getSpeed();
+	sf::FloatRect getGlobalBounds();
 };
 

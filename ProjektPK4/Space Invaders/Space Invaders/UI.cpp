@@ -55,7 +55,7 @@ void UI::renderShieldsTexts(sf::RenderWindow*window)
 	}
 }
 
-void UI::shieldsTextsInitialization()
+void UI::addShieldsTexts()
 {
 	this->shieldsTexts.push_back(sf::Text(this->createShieldText(sf::Vector2f(700, 500), sf::Color::White, "10", 20)));
 	this->shieldsTexts.push_back(sf::Text(this->createShieldText(sf::Vector2f(500, 500), sf::Color::White, "10", 20)));
@@ -68,7 +68,7 @@ UI::UI()
 	this->fontInitialization("Fonts/SpaceInvader.ttf");
 	this->lifeTextInitialization(sf::Vector2f(590.f,25.f),sf::Color::White,"LIVES",15);
 	this->scoreTextInitialization(sf::Vector2f(15.f,25.f),sf::Color::White,15,0);
-	this->shieldsTextsInitialization();
+	this->addShieldsTexts();
 	this->livesInitialization();
 }
 
@@ -81,20 +81,15 @@ void UI::renderLifes(sf::RenderWindow*window)
 	}
 }
 
-
-
 void UI::removeShieldsTexts()
 {
 	this->shieldsTexts.clear();
 }
 
-
-
-
-
-
-
-
+void UI::removeLive()
+{
+	this->lives.erase(this->lives.end() - 1);
+}
 
 void UI::render(sf::RenderWindow*window)
 {
@@ -103,11 +98,6 @@ void UI::render(sf::RenderWindow*window)
 	window->draw(this->scoreText);
 	this->renderLifes(window);
 }
-
-
-
-
-
 
 void UI::updateShieldLife(size_t index, int lifeScore,sf::Vector2f shieldPosition)
 {
@@ -119,14 +109,14 @@ void UI::updateShieldLife(size_t index, int lifeScore,sf::Vector2f shieldPositio
 	this->shieldsTexts[index].setPosition(shieldPosition);
 }
 
-void UI::removeShieldsText(size_t index)
-{
-	this->shieldsTexts.erase(shieldsTexts.begin() + index);
-}
-
 void UI::updateScore(int score)
 {
 	this->scoreText.setString("SCORE " + std::to_string(score));
+}
+
+void UI::removeShieldsText(size_t index)
+{
+	this->shieldsTexts.erase(shieldsTexts.begin() + index);
 }
 
 

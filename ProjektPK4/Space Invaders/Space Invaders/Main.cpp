@@ -8,7 +8,10 @@
 #include"Game.h"
 #include<conio.h>
 
+
 #include<vld.h>
+
+
 
 constexpr int ScreenWidth = 800;
 constexpr int ScreenHeight = 650;
@@ -16,6 +19,7 @@ constexpr int ScreenHeight = 650;
 
 int main()
 {
+	
 	sf::RenderWindow window(sf::VideoMode(ScreenWidth, ScreenHeight), "Hello world");
 	window.setFramerateLimit(60);
 

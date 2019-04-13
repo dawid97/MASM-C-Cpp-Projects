@@ -2,7 +2,7 @@
 
 
 
-Bullet::Bullet(float speed,sf::Vector2f position,sf::Color color,sf::Vector2f scale,std::string fileNameTex)
+Bullet::Bullet(float speed,sf::Vector2f position,sf::Vector2f scale,std::string fileNameTex)
 {
 	this->speed = speed;
 
@@ -20,10 +20,9 @@ Bullet::Bullet(float speed,sf::Vector2f position,sf::Color color,sf::Vector2f sc
 		exit(EXIT_FAILURE);
 	}
 
-	bullet.setTexture(*bulletTex);
 	bullet.setScale(scale);
-	bullet.setColor(color);
-	bullet.setOrigin(bullet.getLocalBounds().width / 2.f,bullet.getGlobalBounds().height/2.f);
+	bullet.setTexture(*bulletTex);
+	bullet.setOrigin(bullet.getLocalBounds().width / 2.f,bullet.getLocalBounds().height/2.f);
 	bullet.setPosition(position);
 }
 
@@ -50,6 +49,11 @@ sf::Vector2f Bullet::getPosition()
 float Bullet::getSpeed()
 {
 	return this->speed;
+}
+
+sf::FloatRect Bullet::getGlobalBounds()
+{
+	return this->bullet.getGlobalBounds();
 }
 
 

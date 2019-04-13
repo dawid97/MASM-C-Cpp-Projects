@@ -2,23 +2,33 @@
 
 
 
-Player::Player(sf::Vector2f position,sf::Vector2f scale,float speed,float shootTimer,std::string shootSound,std::string shipTex)
+Player::Player(sf::Vector2f position,sf::Vector2f scale,float speed,float shootTimer,std::string shootSound,std::string explosionSound, std::string shipTex)
 {
 	this->shootTimer = shootTimer;
 	this->currentShootTimer = this->shootTimer;
 	this->maxSpeed = speed;
 	this->score = 0;
+	this->hp = 3;
 
 	try
 	{
 		//shootSound
-		this->soundBuffer = std::unique_ptr<sf::SoundBuffer>(new sf::SoundBuffer);
+		this->soundBufferShoot = std::unique_ptr<sf::SoundBuffer>(new sf::SoundBuffer);
 
-		if (!soundBuffer->loadFromFile(shootSound))
+		if (!soundBufferShoot->loadFromFile(shootSound))
 			throw LoadingError("sound shoot loading error");
 
 		this->shootSound = std::unique_ptr<sf::Sound>(new sf::Sound);
-		this->shootSound->setBuffer(*soundBuffer);
+		this->shootSound->setBuffer(*this->soundBufferShoot);
+		
+		//explosionSound
+		this->soundBufferExplosion = std::unique_ptr<sf::SoundBuffer>(new sf::SoundBuffer);
+
+		if (!soundBufferExplosion->loadFromFile(explosionSound))
+			throw LoadingError("sound explosion loading error");
+
+		this->explosionSound = std::unique_ptr<sf::Sound>(new sf::Sound);
+		this->explosionSound->setBuffer(*this->soundBufferExplosion);
 
 		//shipTexture
 		this->playerTex = std::unique_ptr<sf::Texture>(new sf::Texture);
@@ -32,11 +42,10 @@ Player::Player(sf::Vector2f position,sf::Vector2f scale,float speed,float shootT
 	}
 
 	//player
-	this->player = std::unique_ptr<sf::Sprite>(new sf::Sprite);
-	player->setTexture(*playerTex);
-	player->setScale(sf::Vector2f(scale));
-	player->setOrigin(player->getLocalBounds().width / 2.f, player->getLocalBounds().height / 2.f);
-	player->setPosition(position);
+	player.setTexture(*playerTex);
+	player.setScale(sf::Vector2f(scale));
+	player.setOrigin(player.getLocalBounds().width / 2.f, player.getLocalBounds().height / 2.f);
+	player.setPosition(position);
 }
 
 void Player::renderBullets(sf::RenderWindow*window)
@@ -46,18 +55,17 @@ void Player::renderBullets(sf::RenderWindow*window)
 	{
 		it->render(window);
 	}
-	std::cout << bullets.size() << std::endl;
 }
 
 void Player::collisionScreen(sf::RenderWindow*window)
 {
 	//collision left screen
-	if (player->getPosition().x - player->getGlobalBounds().width / 2.f < 0)
-		player->setPosition(player->getGlobalBounds().width / 2.f, player->getPosition().y);
+	if (player.getPosition().x - player.getGlobalBounds().width / 2.f < 0)
+		player.setPosition(player.getGlobalBounds().width / 2.f, player.getPosition().y);
 
 	//collision right screen
-	if (player->getPosition().x + player->getGlobalBounds().width / 2.f > window->getSize().x)
-		player->setPosition(window->getSize().x - player->getGlobalBounds().width / 2.f, player->getPosition().y);
+	if (player.getPosition().x + player.getGlobalBounds().width / 2.f > window->getSize().x)
+		player.setPosition(window->getSize().x - player.getGlobalBounds().width / 2.f, player.getPosition().y);
 
 	//bullets out of window
 	std::vector<Bullet>::iterator it;
@@ -77,11 +85,11 @@ void Player::move(sf::RenderWindow*window)
 {
 	//move right
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-		player->move(maxSpeed, 0.f);
+		player.move(maxSpeed, 0.f);
 
 	//move left
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-		player->move(-maxSpeed, 0.f);
+		player.move(-maxSpeed, 0.f);
 }
 
 void Player::shoot()
@@ -93,7 +101,7 @@ void Player::shoot()
 	//shooting
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && currentShootTimer >= shootTimer)
 	{
-		this->bullets.push_back(Bullet(5.f,this->getPosition(), sf::Color::Green, sf::Vector2f(0.1f, 0.2f), "Textures/bullet.png"));
+		this->bullets.push_back(Bullet(5.f,this->getPosition(),sf::Vector2f(0.1f, 0.2f), "Textures/bullet.png"));
 		this->shootSound->play();
 
 		//reset timer
@@ -103,7 +111,7 @@ void Player::shoot()
 
 void Player::render(sf::RenderWindow*window)
 {
-	window->draw(*player);
+	window->draw(player);
 	this->renderBullets(window);
 }
 
@@ -136,10 +144,40 @@ size_t Player::getBulletsSize()
 
 sf::Vector2f Player::getPosition()
 {
-	return player->getPosition();
+	return player.getPosition();
 }
 
 int Player::getScore()
 {
 	return this->score;
+}
+
+sf::FloatRect Player::getGlobalBounds()
+{
+	return this->player.getGlobalBounds();
+}
+
+void Player::removeHp()
+{
+	this->hp--;
+}
+
+int Player::getHp()
+{
+	return this->hp;
+}
+
+void Player::playExplosionSound()
+{
+	this->explosionSound->play();
+}
+
+void Player::setPosition(sf::Vector2f position)
+{
+	this->player.setPosition(position);
+}
+
+void Player::clearBullets()
+{
+	this->bullets.clear();
 }
