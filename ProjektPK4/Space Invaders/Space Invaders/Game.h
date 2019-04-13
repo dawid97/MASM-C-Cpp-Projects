@@ -4,6 +4,7 @@
 #include"UI.h"
 #include"Enemy.h"
 #include"GameOver.h"
+#include"UFO.h"
 #include<cstdlib>
 
 
@@ -12,7 +13,7 @@ class Game
 {
 private:
 	std::unique_ptr<Player>player;
-	
+	std::shared_ptr<UFO>ufo;
 	std::vector<Shield> shields;
 	std::vector<Enemy> enemies;
 	

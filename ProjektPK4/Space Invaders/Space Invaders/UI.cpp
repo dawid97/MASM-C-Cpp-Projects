@@ -65,7 +65,16 @@ void UI::addShieldsTexts()
 
 UI::UI()
 {
-	this->fontInitialization("Fonts/SpaceInvader.ttf");
+	try
+	{
+		this->fontInitialization("Fonts/SpaceInvader.ttf");
+	}
+	catch (LoadingError error)
+	{
+		system("pause");
+		exit(EXIT_FAILURE);
+	}
+
 	this->lifeTextInitialization(sf::Vector2f(590.f,25.f),sf::Color::White,"LIVES",15);
 	this->scoreTextInitialization(sf::Vector2f(15.f,25.f),sf::Color::White,15,0);
 	this->addShieldsTexts();

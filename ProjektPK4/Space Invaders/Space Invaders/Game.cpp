@@ -37,7 +37,8 @@ void Game::addShields()
 
 Game::Game(sf::RenderWindow*window)
 	:player(new Player(sf::Vector2f(window->getSize().x / 2.f, 620.f),sf::Vector2f(0.04f,0.04f),5.f,35.f,"Sounds/shoot.wav","Sounds/explosion.wav","Textures/ship.png")),
-	 ui(new UI())
+	 ui(new UI()),
+	 ufo(new UFO(sf::Vector2f(100.f,70.f),sf::Vector2f(0.3f,0.3f),10.f,"Sounds/ufoHighPitch.wav","Sounds/ufoLowPitch.wav","Textures/ufo.png","Textures/ufo1.png"))
 {
 	this->addShields();
 	
@@ -313,9 +314,11 @@ void Game::mainGame(sf::RenderWindow*window)
 {
 	//update
 	this->UpdateGame(window);
+	this->ufo->update();
 
 	//render
 	this->renderGame(window);
+	this->ufo->render(window);
 
 
 	//gameOver
