@@ -37,8 +37,7 @@ void Game::addShields()
 
 Game::Game(sf::RenderWindow*window)
 	:player(new Player(sf::Vector2f(window->getSize().x / 2.f, 620.f),sf::Vector2f(0.04f,0.04f),5.f,35.f,"Sounds/shoot.wav","Sounds/explosion.wav","Textures/ship.png")),
-	 ui(new UI()),
-	 ufo(new UFO(sf::Vector2f(100.f,70.f),sf::Vector2f(0.3f,0.3f),10.f,"Sounds/ufoHighPitch.wav","Sounds/ufoLowPitch.wav","Textures/ufo.png","Textures/ufo1.png"))
+	 ui(new UI())
 {
 	this->addShields();
 	
@@ -123,7 +122,7 @@ void Game::enemiesChangeTextures()
 	Enemy::changeTextureFlag();
 }
 
-void Game::collisionBulletsOfEnemiesPlayer()
+void Game::collisionBulletsOfPlayerEnemies()
 {
 	for (size_t k = 0; k < this->enemies.size(); k++)
 	{
@@ -269,7 +268,7 @@ void Game::moveEnemies()
 void Game::UpdateGame(sf::RenderWindow*window)
 {
 	//player
-	this->collisionBulletsOfEnemiesPlayer();
+	this->collisionBulletsOfPlayerEnemies();
 	this->collisionBulletsOfEnemiesPlayer(window);
 	this->player->update(window);
 
@@ -283,6 +282,11 @@ void Game::UpdateGame(sf::RenderWindow*window)
 	//shield
 	this->collisionBulletsOfEnemiesShields();
 	this->collisionBulletsOfPlayerShields();
+
+	//aliens
+	this->updateAliens(window);
+	this->collisionBulletOfPlayerAliens();
+
 }
 
 void Game::stepDownEnemies(float step)
@@ -308,17 +312,20 @@ void Game::renderGame(sf::RenderWindow*window)
 	//enemies
 	this->renderEnemies(window);
 	Enemy::renderBullets(window);
+
+	//aliens
+	this->renderAliens(window);
 }
 
 void Game::mainGame(sf::RenderWindow*window)
 {
 	//update
 	this->UpdateGame(window);
-	this->ufo->update();
+	
 
 	//render
 	this->renderGame(window);
-	this->ufo->render(window);
+
 
 
 	//gameOver
@@ -373,5 +380,72 @@ void Game::emptyEnemies()
 		ui->addShieldsTexts();
 		Enemy::setMoveTimer(53);
 		Enemy::setShootTimer(5);
+		UFO::resetCurrentMoveTimer();
+	}
+}
+
+void Game::renderAliens(sf::RenderWindow*window)
+{
+	std::vector<UFO>::iterator it;
+	for (it = this->aliens.begin(); it < this->aliens.end(); it++)
+	{
+		it->render(window);
+	}
+}
+
+void Game::updateAliens(sf::RenderWindow*window)
+{
+	//update move
+	if (this->aliens.size() == 0)
+	{
+		if (UFO::getCurrentMoveTimer() < UFO::getMoveTimer())
+			UFO::incrementCurrentMoveTimer();
+	}
+		
+	if (UFO::getCurrentMoveTimer() >= UFO::getMoveTimer())
+	{
+		this->aliens.push_back(UFO(2.f,sf::Vector2f(-30.f, 70.f), sf::Vector2f(0.3f, 0.3f), 10.f,"Sounds/ufoLowPitch.wav", "Sounds/ufoHighPitch.wav" , "Textures/ufo.png", "Textures/ufo1.png"));
+
+		std::vector<UFO>::iterator it;
+		UFO::resetCurrentMoveTimer();
+	}
+
+	//move
+	std::vector<UFO>::iterator it;
+	for (it = this->aliens.begin(); it < this->aliens.end(); it++)
+	{
+		if (UFO::getCurrentTextureTimer() < UFO::getTextureTimer())
+			UFO::incrementCurrentTextureTimer();		
+
+		if (UFO::getCurrentTextureTimer() >= UFO::getTextureTimer())
+		{
+			it->playLowPitch();
+			it->changeTexture();
+			UFO::resetCurrentTextureTimer();
+		}
+
+		it->move();
+		
+		//ufo out of window
+		if (it->getPosition().x > window->getSize().x+10)
+		{
+			aliens.erase(aliens.begin() + std::distance(aliens.begin(), it));
+			break;
+		}
+	}
+}
+
+void Game::collisionBulletOfPlayerAliens()
+{
+	for (size_t k = 0; k < this->aliens.size(); k++)
+	{
+		for (size_t i = 0; i < player->getBulletsSize(); i++)
+		{
+			if (player->getBullet(i).isIntersects(this->aliens[k].getGlobalBounds()))
+			{
+				this->aliens.erase(this->aliens.begin() + k);
+				break;
+			}
+		}
 	}
 }

@@ -13,7 +13,7 @@ class Game
 {
 private:
 	std::unique_ptr<Player>player;
-	std::shared_ptr<UFO>ufo;
+	std::vector<UFO>aliens;
 	std::vector<Shield> shields;
 	std::vector<Enemy> enemies;
 	
@@ -31,7 +31,7 @@ private:
 	void enemiesChangeTextures();
 	void moveEnemies(float step);
 	void stepDownEnemies(float step);
-	void collisionBulletsOfEnemiesPlayer();
+	void collisionBulletsOfPlayerEnemies();
 	void emptyEnemies();
 	void bulletsOfEnemiesCollisionScreen(sf::RenderWindow*window);
 	void shootEnemies();
@@ -41,6 +41,9 @@ private:
 	void collisionBulletsOfEnemiesShields();
 	void UpdateGame(sf::RenderWindow*window);
 	void renderGame(sf::RenderWindow*window);
+	void renderAliens(sf::RenderWindow*window);
+	void updateAliens(sf::RenderWindow*window);
+	void collisionBulletOfPlayerAliens();
 
 	void collisionBulletsOfPlayerShields();
 public:

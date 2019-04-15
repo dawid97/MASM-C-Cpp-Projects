@@ -261,7 +261,6 @@ void Enemy::renderBullets(sf::RenderWindow*window)
 	{
 		it->render(window);
 	}
-	std::cout << bullets.size() << std::endl;
 }
 
 int Enemy::getCurrentShootTimer()

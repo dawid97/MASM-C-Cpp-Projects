@@ -59,9 +59,3 @@ public:
 	sf::Vector2f getPosition();
 	std::string getEnemyType();
 };
-
-
-
-
-
-

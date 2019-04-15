@@ -1,13 +1,10 @@
 #include "UFO.h"
 
 
-
-UFO::UFO(sf::Vector2f position, sf::Vector2f scale, float speed, std::string ufoLowPitch, std::string ufoHighPitch, std::string ufoTexWhite, std::string ufoTexRed)
+UFO::UFO(float maxSpeed,sf::Vector2f position, sf::Vector2f scale, float speed, std::string ufoLowPitch, std::string ufoHighPitch, std::string ufoTexWhite, std::string ufoTexRed)
 {
 	this->texIndex = 0;
-	this->maxSpeed = 10;
-	this->moveTimer = 20;
-	this->currentMoveTimer = moveTimer;
+	this->maxSpeed = maxSpeed;
 
 	try
 	{
@@ -29,11 +26,6 @@ UFO::UFO(sf::Vector2f position, sf::Vector2f scale, float speed, std::string ufo
 void UFO::render(sf::RenderWindow*window)
 {
 	window->draw(this->ufo);
-}
-
-void UFO::update()
-{
-	this->move();
 }
 
 void UFO::texturesInitialization(std::string ufoTexWhite,std::string ufoTexRed)
@@ -75,19 +67,7 @@ void UFO::soundsInitialization(std::string ufoLowPitch,std::string ufoHighPitch)
 
 void UFO::move()
 {
-	//update move
-	if (currentMoveTimer < moveTimer)
-		currentMoveTimer += 1;
-
-	//move
-	if (currentMoveTimer >= moveTimer)
-	{
-		this->changeTexture();
-		currentMoveTimer = 0;
-	}
-
-	this->ufo.move(2.f, 0.f);
-	
+	this->ufo.move(maxSpeed, 0.f);
 }
 
 void UFO::changeTexture()
@@ -102,4 +82,70 @@ void UFO::changeTexture()
 		this->ufo.setTexture(this->textures[0]);
 		this->texIndex = 0;
 	}
+}
+
+int UFO::moveTimer = 1000;
+int UFO::currentMoveTimer = 0;
+
+int UFO::textureTimer = 200;
+int UFO::currentTextureTimer = UFO::textureTimer;
+
+int UFO::getMoveTimer()
+{
+	return UFO::moveTimer;
+}
+
+int UFO::getCurrentMoveTimer()
+{
+	return UFO::currentMoveTimer;
+}
+
+void UFO::resetCurrentMoveTimer()
+{
+	UFO::currentMoveTimer = 0;
+}
+
+void UFO::incrementCurrentMoveTimer()
+{
+	UFO::currentMoveTimer++;
+}
+
+sf::Vector2f UFO::getPosition()
+{
+	return this->ufo.getPosition();
+}
+
+int UFO::getTextureTimer()
+{
+	return UFO::textureTimer;
+}
+
+int UFO::getCurrentTextureTimer()
+{
+	return UFO::currentTextureTimer;
+}
+
+void UFO::resetCurrentTextureTimer()
+{
+	UFO::currentTextureTimer = 0;
+}
+
+void UFO::incrementCurrentTextureTimer()
+{
+	UFO::currentTextureTimer++;
+}
+
+void UFO::playLowPitch()
+{
+	this->sounds[0].play();
+}
+
+void UFO::playHighPitch()
+{
+	this->sounds[1].play();
+}
+
+sf::FloatRect UFO::getGlobalBounds()
+{
+	return this->ufo.getGlobalBounds();
 }

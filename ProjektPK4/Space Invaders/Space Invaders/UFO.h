@@ -11,19 +11,34 @@ private:
 	std::vector<sf::SoundBuffer>soundsBuffer;
 	std::vector<sf::Sound>sounds;
 	int texIndex;
-	int maxSpeed;
-	int moveTimer;
-	int currentMoveTimer;
+	float maxSpeed;
+	static int moveTimer;
+	static int currentMoveTimer;
+	static int textureTimer;
+	static int currentTextureTimer;
 
 	void texturesInitialization(std::string ufoTexWhite, std::string ufoTexRed);
 	void soundsInitialization(std::string ufoLowPitch, std::string ufoHighPitch);
-	void move();
-	void changeTexture();
+	
+	
 
 public:
-	UFO(sf::Vector2f position, sf::Vector2f scale, float speed,std::string ufoLowPitch,std::string ufoHighPitch,std::string ufoTexWhite,std::string ufoTexRed);
+	UFO(float maxSpeed,sf::Vector2f position, sf::Vector2f scale, float speed,std::string ufoLowPitch,std::string ufoHighPitch,std::string ufoTexWhite,std::string ufoTexRed);
 	void render(sf::RenderWindow*window);
-	void update();
-	
+	void changeTexture();
+	static int getMoveTimer();
+	static int getCurrentMoveTimer();
+	static void incrementCurrentMoveTimer();
+	static void resetCurrentMoveTimer();
+	static int getTextureTimer();
+	static int getCurrentTextureTimer();
+	static void resetCurrentTextureTimer();
+	static void incrementCurrentTextureTimer();
+	void playLowPitch();
+	void playHighPitch();
+	sf::Vector2f getPosition();
+	sf::FloatRect getGlobalBounds();
+
+	void move();
 };
 
