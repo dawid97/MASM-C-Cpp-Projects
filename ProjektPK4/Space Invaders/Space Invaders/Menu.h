@@ -1,23 +1,30 @@
 #pragma once
-#include<SFML/Graphics.hpp>
-#include<iostream>
-
-constexpr int MaxNumberOfItems = 3;
+#include"GameOver.h"
+#include"Game.h"
+#include"MainMenu.h"
+#include"Submitscore.h"
+#include"Highscores.h"
+#include"Pause.h"
 
 class Menu
 {
-public:
-	Menu(int width,int height);
-	~Menu();
-
-	void draw(sf::RenderWindow &window);
-	void moveUp();
-	void moveDown();
-	int GetPressedItem() { return selectedItemIndex; }
-
 private:
-	int selectedItemIndex;
-	sf::Font font;
-	sf::Text menu[MaxNumberOfItems];
+
+	enum stateGame { MM, GO, SS, HS, MG, PG };
+
+	int score;
+	int choose;
+	int currentState;
+
+	Game*game;
+	GameOver*gameOver;
+	MainMenu*mainMenu;
+	Submitscore*submitscore;
+	Highscores*highscores;
+	Pause*pause;
+public:
+	Menu(sf::RenderWindow*window);
+	int update(sf::RenderWindow*window);
+	~Menu();
 };
 

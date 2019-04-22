@@ -2,28 +2,18 @@
 
 
 
-
-Menu::Menu(int width,int height)
+Menu::Menu(sf::RenderWindow*window)
 {
-	if (!font.loadFromFile("Fonts/space_invaders.ttf"))  //uzycie wyjatkow
-		std::cout << "blad wczytywania czcionki" << std::endl;
+	game = nullptr;
+	gameOver = nullptr;
+	mainMenu = new MainMenu(window);
+    submitscore = nullptr;
+	highscores = nullptr;
+	pause = nullptr;
 
-	this->menu[0].setFont(font);
-	this->menu[0].setFillColor(sf::Color::Red);
-	this->menu[0].setString("Play");
-	this->menu[0].setPosition(sf::Vector2f(float(width / 2.f), float(height / (MaxNumberOfItems + 1)*1)));
-
-	this->menu[1].setFont(font);
-	this->menu[1].setFillColor(sf::Color::White);
-	this->menu[1].setString("Options");
-	this->menu[1].setPosition(sf::Vector2f(float(width / 2.f), float(height / (MaxNumberOfItems + 1) * 2)));
-
-	this->menu[2].setFont(font);
-	this->menu[2].setFillColor(sf::Color::White);
-	this->menu[2].setString("Exit");
-	this->menu[2].setPosition(sf::Vector2f(float(width / 2.f), float(height / (MaxNumberOfItems + 1) * 3)));
-
-	this->selectedItemIndex = 0;
+	score = -1;
+	choose = -1;
+	currentState = MM;
 }
 
 
@@ -32,30 +22,195 @@ Menu::~Menu()
 
 }
 
-void Menu::draw(sf::RenderWindow &window)
+int Menu::update(sf::RenderWindow*window)
 {
-	for (int i = 0; i < MaxNumberOfItems; i++)
-	{
-		window.draw(menu[i]);
-	}
-}
+	sf::Event event;
 
-void Menu::moveUp()
-{
-	if (selectedItemIndex - 1 >= 0)
+	while (window->pollEvent(event))
 	{
-		menu[selectedItemIndex].setFillColor(sf::Color::White);
-		selectedItemIndex--;
-		menu[selectedItemIndex].setFillColor(sf::Color::Red);
+		if (event.type == sf::Event::Closed)
+			window->close();
+		if (event.type == sf::Event::TextEntered && submitscore != nullptr)
+		{
+			submitscore->updateUserName(window, &event);
+		}
 	}
-}
 
-void Menu::moveDown()
-{
-	if (selectedItemIndex + 1 < MaxNumberOfItems)
+	window->clear(sf::Color::Black);
+
+	//highscores
+	if (highscores != nullptr)
 	{
-		menu[selectedItemIndex].setFillColor(sf::Color::White);
-		selectedItemIndex++;
-		menu[selectedItemIndex].setFillColor(sf::Color::Red);
+		choose = highscores->update();
+		highscores->render(window);
 	}
+
+	//submitscore
+	if (submitscore != nullptr)
+	{
+		choose = submitscore->update(window);
+		submitscore->render(window);
+	}
+
+	//main menu
+	if (mainMenu != nullptr)
+	{
+		choose = mainMenu->update(window);
+		mainMenu->render(window);
+	}
+
+	//game
+	if (game != nullptr)
+	{
+		if (gameOver == nullptr && pause == nullptr)
+			score = game->update(window);
+
+		game->render(window);
+	}
+
+	//game over
+	if (gameOver != nullptr)
+	{
+		gameOver->render(window);
+		choose = gameOver->update(window);
+	}
+
+	//pause
+	if (pause != nullptr)
+	{
+		choose = pause->update(window);
+		pause->render(window);
+	}
+
+
+
+	if (score != -1 && currentState == MG)
+	{
+		currentState = GO;
+		gameOver = new GameOver(window);
+	}
+
+	if (choose == 2 && currentState == MM)
+	{
+		choose = -1;
+		delete mainMenu;
+		mainMenu = nullptr;
+		return 0;
+	}
+
+	if (choose == 0 && currentState == MM)
+	{
+		choose = -1;
+		delete mainMenu;
+		mainMenu = nullptr;
+
+		game = new Game(window);
+		currentState = MG;
+	}
+
+	if (choose == 2 && currentState == GO)
+	{
+		choose = -1;
+		delete game;
+		game = nullptr;
+		delete gameOver;
+		gameOver = nullptr;
+		return 0;
+	}
+
+	if (choose == 0 && currentState == GO)
+	{
+		choose = -1;
+		currentState = MM;
+		delete game;
+		game = nullptr;
+		delete gameOver;
+		gameOver = nullptr;
+		mainMenu = new MainMenu(window);
+	}
+
+	if (choose == 1 && currentState == GO)
+	{
+		choose = -1;
+		currentState = SS;
+		delete game;
+		game = nullptr;
+		delete gameOver;
+		gameOver = nullptr;
+		submitscore = new Submitscore(window, score);
+	}
+
+	if (choose == 2 && currentState == SS)
+	{
+		choose = -1;
+		delete submitscore;
+		submitscore = nullptr;
+		return 0;
+	}
+
+	if (choose == 1 && currentState == SS)
+	{
+		choose = -1;
+		delete submitscore;
+		submitscore = nullptr;
+		currentState = HS;
+		highscores = new Highscores(window);
+	}
+
+	if (choose == 0 && currentState == HS)
+	{
+		choose = -1;
+		delete highscores;
+		highscores = nullptr;
+		currentState = MM;
+		mainMenu = new MainMenu(window);
+	}
+
+	if (choose == 1 && currentState == MM)
+	{
+		choose = -1;
+		delete mainMenu;
+		mainMenu = nullptr;
+		currentState = HS;
+		highscores = new Highscores(window);
+	}
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape) && currentState == MG)
+	{
+		pause = new Pause(window);
+		currentState = PG;
+	}
+
+	if (choose == 0 && currentState == PG)
+	{
+		choose = -1;
+		delete pause;
+		pause = nullptr;
+		currentState = MG;
+	}
+
+	if (choose == 1 && currentState == PG)
+	{
+		choose = -1;
+		delete pause;
+		pause = nullptr;
+		delete game;
+		game = nullptr;
+		mainMenu = new MainMenu(window);
+		currentState = MM;
+	}
+
+	if (choose == 2 && currentState == PG)
+	{
+		choose = -1;
+		delete pause;
+		pause = nullptr;
+		delete game;
+		game = nullptr;
+		return 0;
+	}
+
+	window->display();
+
+	return -1;
 }

@@ -36,9 +36,10 @@ void Game::addShields()
 }
 
 Game::Game(sf::RenderWindow*window)
-	:player(new Player(sf::Vector2f(window->getSize().x / 2.f, 620.f),sf::Vector2f(0.04f,0.04f),5.f,35.f,"Sounds/shoot.wav","Sounds/explosion.wav","Textures/ship.png")),
+	:player(new Player(sf::Vector2f(window->getSize().x / 2.f, 620.f),sf::Vector2f(0.04f,0.04f),3.f,60.f,"Sounds/shoot.wav","Sounds/explosion.wav","Textures/ship.png")),
 	 ui(new UI())
 {
+	this->setStaticValues();
 	this->addShields();
 	
 	try
@@ -87,6 +88,7 @@ void Game::collisionBulletsOfPlayerShields()
 				{
 					shields.erase(shields.begin() + k);
 					ui->removeShieldsText(k);
+					player->removeBullet(i);
 				}
 				else
 				{
@@ -184,7 +186,7 @@ void Game::shootEnemies()
 		{
 			int tmp = std::rand() % enemies.size();
 
-			Enemy::bullets.push_back(Bullet(3.5f, sf::Vector2f(enemies[tmp].getPosition().x, enemies[tmp].getPosition().y + 20), sf::Vector2f(0.2f, 0.3f), tab[(std::rand() % 2)]));
+			Enemy::bullets.push_back(Bullet(5.f, sf::Vector2f(enemies[tmp].getPosition().x, enemies[tmp].getPosition().y + 20), sf::Vector2f(0.2f, 0.3f), tab[(std::rand() % 2)]));
 
 			for (size_t i = 0; i < enemies.size(); i++)
 			{
@@ -202,11 +204,11 @@ void Game::shootEnemies()
 			}
 		}
 		//reset timer
-		Enemy::resetCurrentShootTimer();
+		Enemy::setCurrentShootTimer(0);
 	}
 }
 
-void Game::enemiesCollisionScreen(sf::RenderWindow*window)
+int Game::enemiesCollisionScreen(sf::RenderWindow*window)
 {
 	for (size_t k = 0; k < enemies.size(); k++)
 	{
@@ -215,6 +217,7 @@ void Game::enemiesCollisionScreen(sf::RenderWindow*window)
 			Enemy::changeDirection();
 			this->moveEnemies(Enemy::getMaxSpeed());
 			this->stepDownEnemies(10);
+			return -1;
 		}
 
 		if (this->enemies[k].getPosition().x-enemies[k].getGlobalBounds().width/2.f < 0)
@@ -222,11 +225,16 @@ void Game::enemiesCollisionScreen(sf::RenderWindow*window)
 			Enemy::changeDirection();
 			this->moveEnemies(Enemy::getMaxSpeed());
 			this->stepDownEnemies(10);
+			return -1;
 		}
+
+		if (this->enemies[k].getPosition().y + this->enemies[k].getGlobalBounds().height / 2.f > window->getSize().y)
+			return 1;
 	}
+	return -1;
 }
 
-void Game::collisionBulletsOfEnemiesPlayer(sf::RenderWindow*window)
+int Game::collisionBulletsOfEnemiesPlayer(sf::RenderWindow*window)
 {
 	for (size_t i = 0; i < Enemy::bullets.size() ; i++)
 	{
@@ -242,11 +250,27 @@ void Game::collisionBulletsOfEnemiesPlayer(sf::RenderWindow*window)
 				}
 				if(player->getHp()==0)
 				{
-					std::cout << "game over" << std::endl;
+					this->aliens.clear();
+					this->setStaticValues();
+					return player->getScore();
 				}
 				break;
 			}
 	}
+	return -1;
+}
+
+void Game::setStaticValues()
+{
+	Enemy::setMoveTimer(53);
+	Enemy::setCurrentMoveTimer(Enemy::getMoveTimer());
+	Enemy::setTextureFlag(0);
+	Enemy::setShootTimer(1);
+	Enemy::setCurrentShootTimer(Enemy::getShootTimer());
+	UFO::resetCurrentMoveTimer();
+	UFO::setCurrentTextureTimer(UFO::getCurrentTextureTimer());
+	Enemy::clearSounds();
+	Enemy::clearSoundsBuffer();
 }
 
 void Game::moveEnemies()
@@ -258,24 +282,36 @@ void Game::moveEnemies()
 		if (this->enemies.size() != 0)
 			Enemy::playInvaderMoveSound(this->enemies.size());
 
-		Enemy::resetCurrentMoveTimer();
+		Enemy::setCurrentMoveTimer(0);
 		this->enemiesChangeTextures();
 	}
 	else
 		Enemy::incrementCurrentMoveTimer();
 }
 
-void Game::UpdateGame(sf::RenderWindow*window)
+int Game::update(sf::RenderWindow*window)
 {
 	//player
 	this->collisionBulletsOfPlayerEnemies();
-	this->collisionBulletsOfEnemiesPlayer(window);
+
+	int isGameOver= this->collisionBulletsOfEnemiesPlayer(window);
+	if (isGameOver != -1)
+		return isGameOver;
+	
 	this->player->update(window);
+
+	isGameOver = this->collisionPlayerEnemies();
+	if (isGameOver != -1)
+		return isGameOver;
 
 	//enemies
 	this->shootEnemies();
 	this->bulletsOfEnemiesCollisionScreen(window);
-	this->enemiesCollisionScreen(window);
+
+	isGameOver=this->enemiesCollisionScreen(window);
+	if (isGameOver != -1)
+		return isGameOver;
+
 	this->moveEnemies();
 	this->emptyEnemies();
 	
@@ -283,10 +319,15 @@ void Game::UpdateGame(sf::RenderWindow*window)
 	this->collisionBulletsOfEnemiesShields();
 	this->collisionBulletsOfPlayerShields();
 
+	isGameOver = this->collisionShieldsEnemies();
+	if (isGameOver != -1)
+		return isGameOver;
+
 	//aliens
 	this->updateAliens(window);
-	this->collisionBulletOfPlayerAliens();
+	this->collisionBulletOfPlayerAliens(window);
 
+	return -1;
 }
 
 void Game::stepDownEnemies(float step)
@@ -298,7 +339,7 @@ void Game::stepDownEnemies(float step)
 	}
 }
 
-void Game::renderGame(sf::RenderWindow*window)
+void Game::render(sf::RenderWindow*window)
 {
 	//player
 	this->player->render(window);
@@ -315,30 +356,30 @@ void Game::renderGame(sf::RenderWindow*window)
 
 	//aliens
 	this->renderAliens(window);
+
+	if (UI::getRenderUfoScore() == 1)
+	ui->renderUfoScoreText(window);
+
+	UI::setRenderUfoScore(0);
 }
 
-void Game::mainGame(sf::RenderWindow*window)
+
+
+int Game::collisionShieldsEnemies()
 {
-	//update
-	this->UpdateGame(window);
-	
-
-	//render
-	this->renderGame(window);
-
-
-
-	//gameOver
 	for (size_t k = 0; k < this->enemies.size(); k++)
 	{
 		for (size_t i = 0; i < shields.size(); i++)
 		{
 			if (shields[i].getGlobalBounds().intersects(this->enemies[k].getGlobalBounds()))
 			{
-				std::cout << "game over" << std::endl;
+				this->aliens.clear();
+				this->setStaticValues();
+				return player->getScore();
 			}
 		}
 	}
+	return -1;
 }
 
 void Game::collisionBulletsOfEnemiesShields()
@@ -380,6 +421,8 @@ void Game::emptyEnemies()
 		ui->addShieldsTexts();
 		Enemy::setMoveTimer(53);
 		Enemy::setShootTimer(5);
+		UFO::resetCurrentMoveTimer();
+		this->aliens.clear();
 		UFO::resetCurrentMoveTimer();
 	}
 }
@@ -435,7 +478,7 @@ void Game::updateAliens(sf::RenderWindow*window)
 	}
 }
 
-void Game::collisionBulletOfPlayerAliens()
+void Game::collisionBulletOfPlayerAliens(sf::RenderWindow*window)
 {
 	for (size_t k = 0; k < this->aliens.size(); k++)
 	{
@@ -443,9 +486,24 @@ void Game::collisionBulletOfPlayerAliens()
 		{
 			if (player->getBullet(i).isIntersects(this->aliens[k].getGlobalBounds()))
 			{
+				ui->updateUfoScore(this->aliens[k].getScore(),this->aliens[k].getPosition());
+				ui->renderUfoScoreText(window);
+				UI::setRenderUfoScore(1);
+				player->addScore(this->aliens[k].getScore());
+				ui->updateScore(player->getScore());
 				this->aliens.erase(this->aliens.begin() + k);
 				break;
 			}
 		}
 	}
+}
+
+int Game::collisionPlayerEnemies()
+{
+	for (size_t k = 0; k < this->enemies.size(); k++)
+	{
+			if (enemies[k].getGlobalBounds().intersects(this->player->getGlobalBounds()))
+				return player->getScore();
+	}
+	return -1;
 }

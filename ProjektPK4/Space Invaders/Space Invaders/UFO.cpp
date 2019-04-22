@@ -6,6 +6,10 @@ UFO::UFO(float maxSpeed,sf::Vector2f position, sf::Vector2f scale, float speed, 
 	this->texIndex = 0;
 	this->maxSpeed = maxSpeed;
 
+	srand(unsigned int(time(NULL)));
+
+	this->score = std::rand() % 201 + 50;
+
 	try
 	{
 		this->texturesInitialization(ufoTexWhite, ufoTexRed);
@@ -148,4 +152,14 @@ void UFO::playHighPitch()
 sf::FloatRect UFO::getGlobalBounds()
 {
 	return this->ufo.getGlobalBounds();
+}
+
+int UFO::getScore()
+{
+	return this->score;
+}
+
+void UFO::setCurrentTextureTimer(int value)
+{
+	UFO::currentTextureTimer = value;
 }

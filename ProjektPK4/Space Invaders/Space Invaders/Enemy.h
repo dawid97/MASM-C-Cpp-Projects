@@ -34,7 +34,7 @@ public:
 	static float getMaxSpeed();
 	static int getCurrentMoveTimer();
 	static int getMoveTimer();
-	static void resetCurrentMoveTimer();
+	static void setCurrentMoveTimer(int value);
 	static void incrementCurrentMoveTimer();
 	static void changeDirection();
 	static void playInvaderKilledSound();
@@ -47,10 +47,12 @@ public:
 	static int getShootTimer();
 	static void incrementCurrentShootTimer();
 	static void incrementShootTimer();
-	static void resetCurrentShootTimer();
+	static void setCurrentShootTimer(int value);
 	static void setMoveTimer(int value);
 	static void setShootTimer(int value);
 	static void setTextureFlag(int value);
+	static void clearSounds();
+	static void clearSoundsBuffer();
 	void render(sf::RenderWindow*window);
 	void setPosition(sf::Vector2f position);
 	void setTexture(int index);

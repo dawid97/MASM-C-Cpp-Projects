@@ -1,26 +1,27 @@
 #include "Highscores.h"
 
-
-
-Highscores::Highscores(sf::RenderWindow*window)
+void Highscores::backgroundInitialization(sf::RenderWindow*window)
 {
 	this->background = std::unique_ptr<sf::Sprite>(new sf::Sprite());
 	this->backgroundTex = std::unique_ptr<sf::Texture>(new sf::Texture());
 	if (!backgroundTex->loadFromFile("Textures/background.png"))
 		throw LoadingError("Background loading error");
 
-
 	background->setTexture(*backgroundTex);
-	background->setScale(sf::Vector2f(0.8f, 1.f));
+	background->setScale(sf::Vector2f(0.9f, 1.1f));
 	background->setOrigin(background->getLocalBounds().width / 2.f, background->getLocalBounds().height / 2.f);
 	background->setPosition(window->getSize().x / 2.f, window->getSize().y / 2.f);
+}
 
-
+void Highscores::fontInitialization()
+{
 	this->font = std::unique_ptr<sf::Font>(new sf::Font());
 	if (!this->font->loadFromFile("Fonts/SpaceInvader.ttf"))
 		throw LoadingError("Font loading error!");
+}
 
-
+void Highscores::titleInitialization(sf::RenderWindow*window)
+{
 	this->title = std::unique_ptr<sf::Text>(new sf::Text());
 	title->setFont(*font);
 	title->setCharacterSize(60);
@@ -29,133 +30,34 @@ Highscores::Highscores(sf::RenderWindow*window)
 	sf::FloatRect boundsTitle = title->getLocalBounds();
 	sf::Vector2f centerTitle(boundsTitle.left + boundsTitle.width / 2.f, boundsTitle.top + boundsTitle.height / 2.f);
 	title->setOrigin(centerTitle);
-	title->setPosition(window->getSize().x / 2.f, window->getSize().y / 15.f);
+	title->setPosition(window->getSize().x / 2.f, window->getSize().y / 12.f);
+}
 
-
-
-	sf::RectangleShape mainBlock;
-	mainBlock.setSize(sf::Vector2f(window->getSize().x / 4.f, window->getSize().y / 9.f));
-	mainBlock.setFillColor(sf::Color(180, 180, 180, 70));
-	mainBlock.setOutlineThickness(2.f);
-	mainBlock.setOutlineColor(sf::Color::Green);
-	mainBlock.setOrigin(mainBlock.getGlobalBounds().width / 2.f, mainBlock.getGlobalBounds().height / 2.f);
-	mainBlock.setPosition(window->getSize().x / 2.f, window->getSize().y / 1.09f);
-	blocksMenu.push_back(mainBlock);
-
-
-	sf::RectangleShape playGame(mainBlock);
-	playGame.setSize(sf::Vector2f(mainBlock.getSize().x / 1.2f, mainBlock.getSize().y / 2.f));
-	playGame.setFillColor(sf::Color(0, 191, 255));
-	playGame.setOrigin(playGame.getGlobalBounds().width / 2.f, playGame.getGlobalBounds().height / 2.f);
-	playGame.setPosition(mainBlock.getPosition().x, mainBlock.getPosition().y);
-	blocksMenu.push_back(playGame);
-
-	this->mainMenu = std::unique_ptr<sf::Text>(new sf::Text(*this->title));
-	mainMenu->setCharacterSize(17);
-	mainMenu->setString("MAIN MENU");
-	sf::FloatRect boundsMainMenu = mainMenu->getLocalBounds();
-	sf::Vector2f centerMainMenu(boundsMainMenu.left + boundsMainMenu.width / 2.f, boundsMainMenu.top + boundsMainMenu.height / 2.f);
-	mainMenu->setOrigin(centerMainMenu);
-	mainMenu->setPosition(playGame.getPosition().x,playGame.getPosition().y);
-
-
+Highscores::Highscores(sf::RenderWindow*window)
+{
 	try
 	{
+		this->fontInitialization();
+		this->backgroundInitialization(window);
 		this->loadPlayers(window);
 	}
 	catch (LoadingError ex)
 	{
 		ex.DisplayMessage();
 	}
+
+	this->titleInitialization(window);
+	this->buttonInitialization(window);
 }
-
-void Highscores::savePlayers()
+	
+void Highscores::buttonInitialization(sf::RenderWindow*window)
 {
-	std::fstream file;
-	file.open("playersData.txt", std::ios::out);
-	if (!file.good())
-		throw LoadingError("PlayersData opening error");
+	//main block
+	this->blocks.push_back(Block(sf::Vector2f(window->getSize().x / 4.f, window->getSize().y / 9.f),
+		sf::Color(180, 180, 180, 70), 2.f, sf::Color::Green, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 1.09f), "", sf::Vector2f(400.f, 210.f), sf::Color::Red));
 
-	std::vector<PlayerScore>::iterator it;
-	for (it = playersScores.begin(); it < playersScores.end(); it++)
-	{
-		std::string s;
-		s = (*it).name.getString();
-		file << s << '\n';
-		s = (*it).score.getString();
-		file << s;
-		if (it != playersScores.end()-1)
-			file << '\n';
-	}
-}
-
-bool Highscores::isPlayer(std::string name, std::string score)
-{
-	std::vector<PlayerScore>::iterator it;
-	for (it = playersScores.begin(); it < playersScores.end(); it++)
-	{
-		if ((*it).name.getString() == name)
-			return true;
-	}
-	return false;
-}
-
-bool Highscores::betterResult(std::string name, std::string score)
-{
-	int tmpScoreUser = stoi(score);
-	std::cout << tmpScoreUser << std::endl;
-	std::cout << "-----------------" << std::endl;
-
-	std::vector<PlayerScore>::iterator it;
-	for (it = playersScores.begin(); it < playersScores.end(); it++)
-	{
-		std::string tmp = (*it).score.getString();
-		int tmpScore = stoi(tmp);
-		std::cout << tmpScore << std::endl;
-		if ((*it).name.getString() == name && tmpScore < tmpScoreUser)
-			return true;
-	}
-	return false;
-}
-
-void Highscores::addPlayer(std::string name,std::string score)
-{
-
-	if (betterResult(name, score))
-	{
-		for (int i = 0; i < playersScores.size(); i++)
-		{
-			if (playersScores[i].name.getString() == name)
-			{
-				playersScores[i].score.setString(score);
-				savePlayers();
-				return;
-			}
-		}
-	}
-
-	if (isPlayer(name, score))
-		return;
-
-	PlayerScore tmpScore;
-
-	sf::Text tmpText1;
-	tmpText1.setString(name);
-	tmpScore.name = tmpText1;
-
-	sf::Text tmpText2;
-	tmpText2.setString(score);
-	tmpScore.score = tmpText2;
-
-	playersScores.push_back(tmpScore);
-	std::sort(playersScores.begin(), playersScores.end());
-
-	for (int i=0;i<playersScores.size();i++)
-	{
-		if (i == 10)
-			playersScores.erase(playersScores.begin() + i, playersScores.end());
-	}
-	savePlayers();
+	//buttons
+	this->buttons.push_back(Button(sf::Color::Black, 2.f, sf::Color::Green, sf::Vector2f(175.f, 50.f), sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 1.09f), "MAIN MENU", 17, sf::Color(0, 191, 255)));
 }
 
 void Highscores::loadPlayers(sf::RenderWindow*window)
@@ -189,7 +91,7 @@ void Highscores::loadPlayers(sf::RenderWindow*window)
 		block.setOrigin(block.getGlobalBounds().width / 2.f, block.getGlobalBounds().height / 2.f);
 
 		if (counter == 0)
-			block.setPosition(window->getSize().x / 2.f, window->getSize().y / 5.5f);
+			block.setPosition(window->getSize().x / 2.f, window->getSize().y / 4.5f);
 		else
 			block.setPosition(window->getSize().x / 2.f, playersBlocks[counter-1].getPosition().y + playersBlocks[counter-1].getGlobalBounds().height);
 
@@ -235,14 +137,10 @@ void Highscores::loadPlayers(sf::RenderWindow*window)
 }
 
 
-void Highscores::Render(sf::RenderWindow* window)
+void Highscores::render(sf::RenderWindow* window)
 {
 	window->draw(*this->background);
 	window->draw(*this->title);
-	
-	std::vector<sf::RectangleShape>::iterator it1;
-	for (it1 = blocksMenu.begin(); it1 < blocksMenu.end(); it1++)
-		window->draw(*it1);
 
 	std::vector<sf::RectangleShape>::iterator it3;
 	for (it3 = playersBlocks.begin(); it3 < playersBlocks.end(); it3++)
@@ -259,5 +157,19 @@ void Highscores::Render(sf::RenderWindow* window)
 	for (it4 = numbers.begin(); it4 < numbers.end(); it4++)
 		window->draw(*it4);
 
-	window->draw(*this->mainMenu);
+	std::vector<Block>::iterator it1;
+	for (it1 = this->blocks.begin(); it1 < this->blocks.end(); it1++)
+		it1->render(window);
+
+	std::vector<Button>::iterator it5;
+	for (it5 = this->buttons.begin(); it5 < this->buttons.end(); it5++)
+		it5->render(window);
+}
+
+int Highscores::update()
+{
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+		return 0;
+
+	return -1;
 }

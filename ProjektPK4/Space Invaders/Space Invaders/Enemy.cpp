@@ -36,7 +36,7 @@ int Enemy::moveTimer = 53;
 int Enemy::currentMoveTimer = Enemy::moveTimer;
 int Enemy::textureFlag = 0;
 
-int Enemy::shootTimer = 5;
+int Enemy::shootTimer = 1;
 int Enemy::currentShootTimer = Enemy::shootTimer;
 
 std::vector<sf::Texture> Enemy::enemyTextures;
@@ -164,9 +164,9 @@ int Enemy::getMoveTimer()
 	return Enemy::moveTimer;
 }
 
-void Enemy::resetCurrentMoveTimer()
+void Enemy::setCurrentMoveTimer(int value)
 {
-	Enemy::currentMoveTimer = 0;
+	Enemy::currentMoveTimer = value;
 }
 
 void Enemy::incrementCurrentMoveTimer()
@@ -278,9 +278,9 @@ void Enemy::incrementCurrentShootTimer()
 	Enemy::currentShootTimer++;
 }
 
-void Enemy::resetCurrentShootTimer()
+void Enemy::setCurrentShootTimer(int value)
 {
-	Enemy::currentShootTimer = 0;
+	Enemy::currentShootTimer = value;
 }
 
 void Enemy::incrementShootTimer()
@@ -301,4 +301,14 @@ void Enemy::setShootTimer(int value)
 void Enemy::setTextureFlag(int value)
 {
 	Enemy::textureFlag = value;
+}
+
+void Enemy::clearSounds()
+{
+	Enemy::sounds.clear();
+}
+
+void Enemy::clearSoundsBuffer()
+{
+	Enemy::soundsBuffer.clear();
 }

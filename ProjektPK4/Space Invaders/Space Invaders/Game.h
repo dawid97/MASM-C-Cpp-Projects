@@ -9,6 +9,7 @@
 
 
 
+
 class Game
 {
 private:
@@ -16,12 +17,8 @@ private:
 	std::vector<UFO>aliens;
 	std::vector<Shield> shields;
 	std::vector<Enemy> enemies;
-	
-
 	std::unique_ptr<UI> ui;
-	
 
-	
 	void addEnemies();
 	void addShields();
 
@@ -35,20 +32,20 @@ private:
 	void emptyEnemies();
 	void bulletsOfEnemiesCollisionScreen(sf::RenderWindow*window);
 	void shootEnemies();
-	void enemiesCollisionScreen(sf::RenderWindow*window);
+	int enemiesCollisionScreen(sf::RenderWindow*window);
 	void moveEnemies();
-	void collisionBulletsOfEnemiesPlayer(sf::RenderWindow*window);
+	int collisionBulletsOfEnemiesPlayer(sf::RenderWindow*window);
 	void collisionBulletsOfEnemiesShields();
-	void UpdateGame(sf::RenderWindow*window);
-	void renderGame(sf::RenderWindow*window);
 	void renderAliens(sf::RenderWindow*window);
 	void updateAliens(sf::RenderWindow*window);
-	void collisionBulletOfPlayerAliens();
-
+	void collisionBulletOfPlayerAliens(sf::RenderWindow*window);
+	void setStaticValues();
+	int collisionShieldsEnemies();
+	int collisionPlayerEnemies();
 	void collisionBulletsOfPlayerShields();
 public:
-	void mainGame(sf::RenderWindow*window);
+	int update(sf::RenderWindow*window);
+	void render(sf::RenderWindow*window);
 	Game(sf::RenderWindow*window);
-	
 };
 

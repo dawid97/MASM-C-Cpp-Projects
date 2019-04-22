@@ -1,5 +1,7 @@
 #include "UI.h"
 
+int UI::renderUfoScore = 0;
+
 sf::Text UI::createShieldText(sf::Vector2f position, sf::Color color, std::string inscription, unsigned int size)
 {
 	this->shieldText.setFont(*font);
@@ -12,6 +14,32 @@ sf::Text UI::createShieldText(sf::Vector2f position, sf::Color color, std::strin
 	shieldText.setOrigin(centerShieldText);
 	shieldText.setPosition(position);
 	return shieldText;
+}
+
+void UI::highscoreInitialization(std::string fileName,sf::Color color, unsigned int size, sf::Vector2f position)
+{
+	std::string score;
+
+	std::fstream file;
+	file.open("playersData.txt", std::ios::in);
+	if (!file.good())
+		throw LoadingError("PlayersData loading error");
+
+	file.seekg(0, std::ios::end);
+	if (file.tellg() == 0)
+		score = "0";
+	else
+	{
+		file.seekg(0, std::ios::beg);
+		std::getline(file, score);
+		std::getline(file, score);
+	}
+		
+	this->highscoreText.setFont(*font);
+	this->highscoreText.setCharacterSize(size);
+	this->highscoreText.setFillColor(color);
+	this->highscoreText.setString("HIGHSCORE " + score);
+	this->highscoreText.setPosition(position);
 }
 
 void UI::livesInitialization()
@@ -68,6 +96,8 @@ UI::UI()
 	try
 	{
 		this->fontInitialization("Fonts/SpaceInvader.ttf");
+		this->highscoreInitialization("PlayersData.txt",sf::Color::White, 15, sf::Vector2f(280.f, 25.f));
+		
 	}
 	catch (LoadingError error)
 	{
@@ -77,8 +107,10 @@ UI::UI()
 
 	this->lifeTextInitialization(sf::Vector2f(590.f,25.f),sf::Color::White,"LIVES",15);
 	this->scoreTextInitialization(sf::Vector2f(15.f,25.f),sf::Color::White,15,0);
+	this->ufoScoreTextInitialization(sf::Vector2f(150.f, 25.f), sf::Color::White, 15, 0);
 	this->addShieldsTexts();
 	this->livesInitialization();
+	
 }
 
 void UI::renderLifes(sf::RenderWindow*window)
@@ -106,6 +138,12 @@ void UI::render(sf::RenderWindow*window)
 	window->draw(this->liveText);
 	window->draw(this->scoreText);
 	this->renderLifes(window);
+	window->draw(this->highscoreText);
+}
+
+void UI::renderUfoScoreText(sf::RenderWindow*window)
+{
+	window->draw(this->ufoScoreText);
 }
 
 void UI::updateShieldLife(size_t index, int lifeScore,sf::Vector2f shieldPosition)
@@ -128,5 +166,30 @@ void UI::removeShieldsText(size_t index)
 	this->shieldsTexts.erase(shieldsTexts.begin() + index);
 }
 
+void UI::ufoScoreTextInitialization(sf::Vector2f position, sf::Color color, unsigned int size, int score)
+{
+	this->ufoScoreText.setFont(*font);
+	this->ufoScoreText.setCharacterSize(size);
+	this->ufoScoreText.setFillColor(color);
+	this->ufoScoreText.setString(std::to_string(score));
+	sf::FloatRect boundsUfoScore = this->ufoScoreText.getLocalBounds();
+	sf::Vector2f centerUfoScore(boundsUfoScore.left + boundsUfoScore.width / 2.f, boundsUfoScore.top + boundsUfoScore.height / 2.f);
+	this->ufoScoreText.setOrigin(centerUfoScore);
+	this->ufoScoreText.setPosition(position);
+}
 
+void UI::updateUfoScore(int score,sf::Vector2f position)
+{
+	this->ufoScoreText.setPosition(position);
+	this->ufoScoreText.setString(std::to_string(score));
+}
 
+int UI::getRenderUfoScore()
+{
+	return UI::renderUfoScore;
+}
+
+void UI::setRenderUfoScore(int value)
+{
+	UI::renderUfoScore = value;
+}

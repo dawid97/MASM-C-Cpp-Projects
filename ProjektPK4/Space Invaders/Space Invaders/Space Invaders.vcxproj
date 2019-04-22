@@ -22,7 +22,7 @@
     <VCProjectVersion>15.0</VCProjectVersion>
     <ProjectGuid>{18B5CAEB-A1B6-40A3-AC3A-BBF20203E920}</ProjectGuid>
     <RootNamespace>SpaceInvaders</RootNamespace>
-    <WindowsTargetPlatformVersion>10.0.17763.0</WindowsTargetPlatformVersion>
+    <WindowsTargetPlatformVersion>10.0.17134.0</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
@@ -126,34 +126,40 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Block.cpp" />
     <ClCompile Include="Bullet.cpp" />
+    <ClCompile Include="Button.cpp" />
     <ClCompile Include="Enemy.cpp" />
     <ClCompile Include="Game.cpp" />
-    <ClCompile Include="GameOver.cpp" />
     <ClCompile Include="Highscores.cpp" />
     <ClCompile Include="Live.cpp" />
     <ClCompile Include="Main.cpp" />
     <ClCompile Include="MainMenu.cpp" />
+    <ClCompile Include="GameOver.cpp" />
     <ClCompile Include="Menu.cpp" />
+    <ClCompile Include="Pause.cpp" />
     <ClCompile Include="Player.cpp" />
     <ClCompile Include="Shield.cpp" />
-    <ClCompile Include="SubmitScores.cpp" />
+    <ClCompile Include="Submitscore.cpp" />
     <ClCompile Include="UFO.cpp" />
     <ClCompile Include="UI.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Block.h" />
     <ClInclude Include="Bullet.h" />
+    <ClInclude Include="Button.h" />
     <ClInclude Include="Enemy.h" />
     <ClInclude Include="Exceptions.h" />
     <ClInclude Include="Game.h" />
-    <ClInclude Include="GameOver.h" />
     <ClInclude Include="Highscores.h" />
     <ClInclude Include="Live.h" />
     <ClInclude Include="MainMenu.h" />
+    <ClInclude Include="GameOver.h" />
     <ClInclude Include="Menu.h" />
+    <ClInclude Include="Pause.h" />
     <ClInclude Include="Player.h" />
     <ClInclude Include="Shield.h" />
-    <ClInclude Include="SubmitScores.h" />
+    <ClInclude Include="Submitscore.h" />
     <ClInclude Include="UFO.h" />
     <ClInclude Include="UI.h" />
   </ItemGroup>

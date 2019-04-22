@@ -47,7 +47,6 @@ public:
 	sf::FloatRect getGlobalBounds();
 	void removeHp();
 	int getHp();
-
 };
 	
 	

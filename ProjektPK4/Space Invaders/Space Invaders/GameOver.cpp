@@ -1,79 +1,53 @@
 #include "GameOver.h"
 
-GameOver::GameOver(sf::RenderWindow* window)
+
+GameOver::GameOver(sf::RenderWindow*window)
 {
-	this->maxNumberOfItems = 3;
 	this->selectedItemIndex = 0;
+	this->maxNumberOfItems = 3;
 	this->downKey = false;
 	this->upKey = false;
-	//this->enterKey = false;
-	
 
-	this->font = std::unique_ptr<sf::Font>(new sf::Font());
-	this->gameOverText = std::unique_ptr<sf::Text>(new sf::Text());
+	//main block
+	this->blocks.push_back(Block(sf::Vector2f(window->getSize().x / 4.f, window->getSize().y / 2.5f),
+		sf::Color(180, 180, 180, 70), 2.f, sf::Color::Green, sf::Vector2f(window->getSize().x / 2.f, window->getSize().y / 2.f),"GAME OVER",sf::Vector2f(400.f,210.f),sf::Color::Red));
 
-	if (!this->font->loadFromFile("Fonts/SpaceInvader.ttf"))
-		throw LoadingError("Font loading error!");
-
-	
-	sf::RectangleShape mainBlock;
-	mainBlock.setSize(sf::Vector2f(window->getSize().x/4.f,window->getSize().y/2.5f));
-	mainBlock.setFillColor(sf::Color(180,180,180,70));
-	mainBlock.setOutlineThickness(2.f);
-	mainBlock.setOutlineColor(sf::Color::Green);
-	mainBlock.setOrigin(mainBlock.getGlobalBounds().width / 2.f, mainBlock.getGlobalBounds().height / 2.f);
-	mainBlock.setPosition(window->getSize().x / 2.f, window->getSize().y / 2.f);
-	blocks.push_back(mainBlock);
-
-
-	sf::RectangleShape mainMenu(mainBlock);
-	mainMenu.setSize(sf::Vector2f(mainBlock.getSize().x/1.2f,mainBlock.getSize().y/5.f));
-	mainMenu.setFillColor(sf::Color::Black);
-	mainMenu.setOrigin(mainMenu.getGlobalBounds().width / 2.f, mainMenu.getGlobalBounds().height / 2.f);
-	mainMenu.setPosition(mainBlock.getPosition().x,mainBlock.getPosition().y/1.3f);
-	blocks.push_back(mainMenu);
-
-
-	sf::RectangleShape submitScores(mainMenu);
-	submitScores.setPosition(mainBlock.getPosition().x, mainBlock.getPosition().y);
-	blocks.push_back(submitScores);
-
-	sf::RectangleShape exitGame(mainMenu);
-	exitGame.setPosition(mainBlock.getPosition().x, mainBlock.getPosition().y/0.81f);
-	blocks.push_back(exitGame);
-
-
-	gameOverText->setFont(*font);
-	gameOverText->setCharacterSize(17);
-	gameOverText->setFillColor(sf::Color::White);
-	gameOverText->setString("GAME OVER");
-	sf::FloatRect boundsGameOver = gameOverText->getLocalBounds();
-	sf::Vector2f centerGameOver(boundsGameOver.left + boundsGameOver.width / 2.f, boundsGameOver.top + boundsGameOver.height / 2.f);
-	gameOverText->setOrigin(centerGameOver);
-	gameOverText->setPosition(window->getSize().x / 2.f, window->getSize().y / 3.15f);
-	
-
-	sf::Text mainMenuText(*gameOverText);
-	mainMenuText.setFillColor(sf::Color(0, 191, 255));
-	mainMenuText.setString("MAIN MENU");
-	mainMenuText.setPosition(window->getSize().x / 2.f, window->getSize().y / 2.63f);
-	texts.push_back(mainMenuText);
-
-	sf::Text submitScoresText(*gameOverText);
-	submitScoresText.setString("SUBMIT SCORE");
-	sf::FloatRect boundsSubmitScores = submitScoresText.getLocalBounds();
-	sf::Vector2f centerSubmitScores(boundsSubmitScores.left + boundsSubmitScores.width / 2.f, boundsSubmitScores.top + boundsSubmitScores.height / 2.f);
-	submitScoresText.setOrigin(centerSubmitScores);
-	submitScoresText.setPosition(window->getSize().x / 2.f, window->getSize().y / 2.f);
-	texts.push_back(submitScoresText);
-
-	sf::Text exitText(*gameOverText);
-	exitText.setString("EXIT GAME");
-	exitText.setPosition(window->getSize().x / 2.f, window->getSize().y / 1.63f);
-	texts.push_back(exitText);
+	//buttons
+	this->buttons.push_back(Button(sf::Color::Black,2.f,sf::Color::Green,sf::Vector2f(170.f,50.f),sf::Vector2f(400.f,260.f),"MAIN MENU",17, sf::Color(0, 191, 255)));
+	this->buttons.push_back(Button(sf::Color::Black, 2.f, sf::Color::Green, sf::Vector2f(170.f, 50.f), sf::Vector2f(400.f, 330.f),"SUBMIT SCORE",17,sf::Color::White));
+	this->buttons.push_back(Button(sf::Color::Black, 2.f, sf::Color::Green, sf::Vector2f(170.f, 50.f), sf::Vector2f(400.f, 400.f),"EXIT GAME",17,sf::Color::White));
 }
 
-void GameOver::Update(sf::RenderWindow* window)
+void GameOver::render(sf::RenderWindow*window)
+{
+	for (size_t i = 0; i < this->blocks.size(); i++)
+		this->blocks[i].render(window);
+
+	for (size_t i = 0; i < this->buttons.size(); i++)
+		this->buttons[i].render(window);
+}
+
+void GameOver::moveUp()
+{
+	if (selectedItemIndex - 1 >= 0)
+	{
+		buttons[selectedItemIndex].setTextColor(sf::Color::White);
+		selectedItemIndex--;
+		buttons[selectedItemIndex].setTextColor(sf::Color(0, 191, 255));
+	}
+}
+
+void GameOver::moveDown()
+{
+	if (selectedItemIndex + 1 < maxNumberOfItems)
+	{
+		buttons[selectedItemIndex].setTextColor(sf::Color::White);
+		selectedItemIndex++;
+		buttons[selectedItemIndex].setTextColor(sf::Color(0, 191, 255));
+	}
+}
+
+int GameOver::update(sf::RenderWindow* window)
 {
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up) && !this->upKey)
 	{
@@ -86,46 +60,17 @@ void GameOver::Update(sf::RenderWindow* window)
 
 	this->upKey = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up);
 	this->downKey = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && buttons[0].getTextColor() == sf::Color(0, 191, 255))
+		return 0;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && buttons[1].getTextColor() == sf::Color(0, 191, 255))
+		return 1;
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter) && buttons[2].getTextColor() == sf::Color(0, 191, 255))
+		return 2;
+
+	return -1;
 }
 
-void GameOver::Render(sf::RenderWindow* window)
-{
 
-	std::vector<sf::RectangleShape>::iterator it1;
-	for (it1 = blocks.begin(); it1 < blocks.end(); it1++)
-		window->draw(*it1);
-
-	window->draw(*this->gameOverText);
-
-
-	std::vector<sf::Text>::iterator it2;
-	for (it2 = texts.begin(); it2 < texts.end(); it2++)
-		window->draw(*it2);
-}
-
-void GameOver::moveUp()
-{
-	if (selectedItemIndex - 1 >= 0)
-	{
-		texts[selectedItemIndex].setFillColor(sf::Color::White);
-		selectedItemIndex--;
-		texts[selectedItemIndex].setFillColor(sf::Color(0, 191, 255));
-		
-	}
-}
-
-void GameOver::moveDown()
-{
-	if (selectedItemIndex + 1 < maxNumberOfItems)
-	{
-		texts[selectedItemIndex].setFillColor(sf::Color::White);
-		selectedItemIndex++;
-		texts[selectedItemIndex].setFillColor(sf::Color(0, 191, 255));
-	}
-}
-
-//if (!sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Return) && enterKey)
-//{
-//	coreState.SetState(new main_menu());
-//}
-//enterKey = sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Return);

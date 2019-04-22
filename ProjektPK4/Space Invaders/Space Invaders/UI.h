@@ -3,6 +3,9 @@
 #include"Exceptions.h"
 #include"Player.h"
 #include"Live.h"
+#include<fstream>
+
+
 
 class UI
 {
@@ -10,6 +13,8 @@ private:
 	std::unique_ptr<sf::Font>font;
 	sf::Text shieldText;
 	sf::Text scoreText;
+	sf::Text ufoScoreText;
+	sf::Text highscoreText;
 
 
 	sf::Text liveText;
@@ -20,10 +25,13 @@ private:
 	sf::Text createShieldText(sf::Vector2f position,sf::Color color,std::string inscription,unsigned int size);
 	void livesInitialization();
 	void lifeTextInitialization(sf::Vector2f position, sf::Color color, std::string inscription, unsigned int size);
+	void highscoreInitialization(std::string fileName,sf::Color color, unsigned int size, sf::Vector2f position);
 	void fontInitialization(std::string fileNameFon);
 	void scoreTextInitialization(sf::Vector2f position, sf::Color color, unsigned int size, int score);
+	void ufoScoreTextInitialization(sf::Vector2f position, sf::Color color, unsigned int size, int score);
 	void renderShieldsTexts(sf::RenderWindow*window);
 	void renderLifes(sf::RenderWindow*window);
+	static int renderUfoScore;
 
 	
 public:
@@ -35,5 +43,9 @@ public:
 	void removeShieldsText(size_t index);
 	void removeShieldsTexts();
 	void addShieldsTexts();
+	void renderUfoScoreText(sf::RenderWindow*window);
+	void updateUfoScore(int score,sf::Vector2f position);
+	static int getRenderUfoScore();
+	static void setRenderUfoScore(int value);
 };
 

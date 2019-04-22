@@ -101,7 +101,7 @@ void Player::shoot()
 	//shooting
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space) && currentShootTimer >= shootTimer)
 	{
-		this->bullets.push_back(Bullet(5.f,this->getPosition(),sf::Vector2f(0.1f, 0.2f), "Textures/bullet.png"));
+		this->bullets.push_back(Bullet(4.f,this->getPosition(),sf::Vector2f(0.1f, 0.2f), "Textures/bullet.png"));
 		this->shootSound->play();
 
 		//reset timer

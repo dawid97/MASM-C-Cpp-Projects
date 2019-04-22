@@ -12,6 +12,7 @@ private:
 	std::vector<sf::Sound>sounds;
 	int texIndex;
 	float maxSpeed;
+	int score;
 	static int moveTimer;
 	static int currentMoveTimer;
 	static int textureTimer;
@@ -21,7 +22,6 @@ private:
 	void soundsInitialization(std::string ufoLowPitch, std::string ufoHighPitch);
 	
 	
-
 public:
 	UFO(float maxSpeed,sf::Vector2f position, sf::Vector2f scale, float speed,std::string ufoLowPitch,std::string ufoHighPitch,std::string ufoTexWhite,std::string ufoTexRed);
 	void render(sf::RenderWindow*window);
@@ -34,10 +34,12 @@ public:
 	static int getCurrentTextureTimer();
 	static void resetCurrentTextureTimer();
 	static void incrementCurrentTextureTimer();
+	static void setCurrentTextureTimer(int value);
 	void playLowPitch();
 	void playHighPitch();
 	sf::Vector2f getPosition();
 	sf::FloatRect getGlobalBounds();
+	int getScore();
 
 	void move();
 };

@@ -2,30 +2,21 @@
 #include<SFML/Graphics.hpp>
 #include<vector>
 #include"Exceptions.h"
+#include"GameOver.h"
 
-class MainMenu
+class MainMenu:public GameOver
 {
-private:
+protected:
+	std::unique_ptr<sf::Sprite> background;
+	std::unique_ptr<sf::Texture> backgroundTex;
 	std::unique_ptr<sf::Font>font;
-	std::unique_ptr<sf::Text>chooseActionText;
-	std::unique_ptr<sf::Text>title;
-	std::unique_ptr<sf::Sprite>background;
-	std::unique_ptr<sf::Texture>backgroundTex;
-	std::vector<sf::Text> texts;
-	std::vector<sf::RectangleShape> blocks;
-
-	bool enterKey;
-	int selectedItemIndex;
-	int maxNumberOfItems;
-	bool upKey, downKey;
-	void moveUp();
-	void moveDown();
-
+	
+	void fontInitialization(std::string fileNameFont);
+	void backgroundInitialization(sf::RenderWindow*window);
 
 public:
-	MainMenu(sf::RenderWindow* window);
-	void Update(sf::RenderWindow* window);
-	void Render(sf::RenderWindow* window);
+	MainMenu(sf::RenderWindow*window);
+	void render(sf::RenderWindow*window);
 };
 
 
