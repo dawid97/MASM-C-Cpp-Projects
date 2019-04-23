@@ -166,10 +166,10 @@ void Highscores::render(sf::RenderWindow* window)
 		it5->render(window);
 }
 
-int Highscores::update()
+int Highscores::update(sf::RenderWindow*window)
 {
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Enter))
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
 		return 0;
-
-	return -1;
+	else
+		return -1;
 }

@@ -24,6 +24,7 @@ private:
 	std::vector<Button> buttons;
 
 
+
 	void backgroundInitialization(sf::RenderWindow*window);
 	void fontInitialization();
 	void titleInitialization(sf::RenderWindow*window);
@@ -32,7 +33,7 @@ private:
 public:
 	Highscores(sf::RenderWindow* window);
 	void render(sf::RenderWindow* window);
-	int update();
+	int update(sf::RenderWindow*window);
 };
 
 

@@ -15,6 +15,7 @@ private:
 	int score;
 	int choose;
 	int currentState;
+	bool enterKey;
 
 	Game*game;
 	GameOver*gameOver;
