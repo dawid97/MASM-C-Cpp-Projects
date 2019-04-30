@@ -37,7 +37,6 @@ private:
 	bool betterResult(std::string name, std::string score);
 	void addPlayer(std::string name, std::string score);
 	void loadPlayers();
-	bool isGoodString(std::string name);
 	void moveUp();
 	void moveDown();
 

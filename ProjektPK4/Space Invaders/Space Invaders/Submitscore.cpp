@@ -47,19 +47,6 @@ void Submitscore::render(sf::RenderWindow*window)
 	window->draw(*this->name);
 }
 
-bool Submitscore::isGoodString(std::string name)
-{
-	if (name.size() == 0)
-		return false;
-
-	for (size_t i = 0; i < name.size(); i++)
-	{
-		if (name[i] >= 97 && name[i] <= 122)
-			return false;
-	}
-	return true;
-}
-
 void Submitscore::moveUp()
 {
 	if (selectedItemIndex - 1 == 0)
@@ -124,6 +111,9 @@ void Submitscore::updateUserName(sf::RenderWindow*window, sf::Event*event)
 {
 	if (event->text.unicode < 128)
 	{
+		if (event->text.unicode > 96 && event->text.unicode < 123)
+			event->text.unicode -= 32;
+
 		std::unique_ptr<sf::String>str(new sf::String);
 		*str = this->name->getString();
 
@@ -195,9 +185,6 @@ bool Submitscore::betterResult(std::string name, std::string score)
 
 void Submitscore::addPlayer(std::string name, std::string score)
 {
-	if (!isGoodString(name))
-		return;
-
 	if (betterResult(name, score))
 	{
 		for (int i = 0; i < playersScores.size(); i++)
