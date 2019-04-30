@@ -12,7 +12,8 @@ private:
 
 	enum stateGame { MM, GO, SS, HS, MG, PG };
 
-	int score;
+	int tmpScore;
+	int playerScore;
 	int choose;
 	int currentState;
 	bool enterKey;

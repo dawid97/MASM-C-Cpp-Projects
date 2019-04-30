@@ -12,7 +12,7 @@ Menu::Menu(sf::RenderWindow*window)
 	pause = nullptr;
 	enterKey = false;
 
-	score = -1;
+	tmpScore = -1;
 	choose = -1;
 	currentState = MM;
 }
@@ -35,28 +35,22 @@ int Menu::update(sf::RenderWindow*window)
 		{
 			submitscore->updateUserName(window, &event);
 		}
-		if (score != -1 && currentState == MG)
-		{
-			currentState = GO;
-			gameOver = new GameOver(window);
-		}
-		else if (choose == 2 && currentState == MM)
+		if (choose == 2 && currentState == MM)
 		{
 			choose = -1;
 			delete mainMenu;
 			mainMenu = nullptr;
 			return 0;
 		}
-		else if (choose == 0 && currentState == MM)
+		if (choose == 0 && currentState == MM)
 		{
 			choose = -1;
 			delete mainMenu;
 			mainMenu = nullptr;
-
-			game = new Game(window);
 			currentState = MG;
+			game = new Game(window);
 		}
-		else if (choose == 2 && currentState == GO)
+		if (choose == 2 && currentState == GO)
 		{
 			choose = -1;
 			delete game;
@@ -65,7 +59,7 @@ int Menu::update(sf::RenderWindow*window)
 			gameOver = nullptr;
 			return 0;
 		}
-		else if (choose == 0 && currentState == GO)
+		if (choose == 0 && currentState == GO)
 		{
 			choose = -1;
 			currentState = MM;
@@ -75,7 +69,7 @@ int Menu::update(sf::RenderWindow*window)
 			gameOver = nullptr;
 			mainMenu = new MainMenu(window);
 		}
-		else if (choose == 1 && currentState == GO)
+	    if (choose == 1 && currentState == GO)
 		{
 			choose = -1;
 			currentState = SS;
@@ -83,16 +77,16 @@ int Menu::update(sf::RenderWindow*window)
 			game = nullptr;
 			delete gameOver;
 			gameOver = nullptr;
-			submitscore = new Submitscore(window, score);
+			submitscore = new Submitscore(window,	playerScore);
 		}
-		else if (choose == 2 && currentState == SS)
+		if (choose == 2 && currentState == SS)
 		{
 			choose = -1;
 			delete submitscore;
 			submitscore = nullptr;
 			return 0;
 		}
-		else if (choose == 1 && currentState == SS)
+		if (choose == 1 && currentState == SS)
 		{
 			choose = -1;
 			delete submitscore;
@@ -100,7 +94,7 @@ int Menu::update(sf::RenderWindow*window)
 			currentState = HS;
 			highscores = new Highscores(window);
 		}
-		else if (choose == 0 && currentState == HS)
+		if (choose == 0 && currentState == HS)
 		{
 			enterKey = true;
 			choose = -1;
@@ -110,7 +104,7 @@ int Menu::update(sf::RenderWindow*window)
 			currentState = MM;
 			mainMenu = new MainMenu(window);
 		}
-		else if (choose == 1 && currentState == MM)
+		if (choose == 1 && currentState == MM)
 		{
 			choose = -1;
 			delete mainMenu;
@@ -118,19 +112,19 @@ int Menu::update(sf::RenderWindow*window)
 			currentState = HS;
 			highscores = new Highscores(window);
 		}
-		else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape) && currentState == MG)
+		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Escape) && currentState == MG)
 		{
 			pause = new Pause(window);
 			currentState = PG;
 		}
-		else if (choose == 0 && currentState == PG)
+		if (choose == 0 && currentState == PG)
 		{
 			choose = -1;
 			delete pause;
 			pause = nullptr;
 			currentState = MG;
 		}
-		else if (choose == 1 && currentState == PG)
+		if (choose == 1 && currentState == PG)
 		{
 			choose = -1;
 			delete pause;
@@ -140,7 +134,7 @@ int Menu::update(sf::RenderWindow*window)
 			mainMenu = new MainMenu(window);
 			currentState = MM;
 		}
-		else if (choose == 2 && currentState == PG)
+		if (choose == 2 && currentState == PG)
 		{
 			choose = -1;
 			delete pause;
@@ -149,6 +143,15 @@ int Menu::update(sf::RenderWindow*window)
 			game = nullptr;
 			return 0;
 		}
+		
+	}
+
+	if (tmpScore != -1 && currentState == MG)
+	{
+		playerScore = tmpScore;
+		tmpScore = -1;
+		currentState = GO;
+		gameOver = new GameOver(window);
 	}
 
 	window->clear(sf::Color::Black);
@@ -178,7 +181,7 @@ int Menu::update(sf::RenderWindow*window)
 	if (game != nullptr)
 	{
 		if (gameOver == nullptr && pause == nullptr)
-			score = game->update(window);
+			tmpScore = game->update(window);
 
 		game->render(window);
 	}
