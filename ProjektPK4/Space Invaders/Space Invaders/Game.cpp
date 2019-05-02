@@ -186,7 +186,7 @@ void Game::shootEnemies()
 		{
 			int tmp = std::rand() % enemies.size();
 
-			Enemy::bullets.push_back(Bullet(5.f, sf::Vector2f(enemies[tmp].getPosition().x, enemies[tmp].getPosition().y + 20), sf::Vector2f(0.2f, 0.3f), tab[(std::rand() % 2)]));
+			Enemy::bullets.push_back(Bullet(6.f, sf::Vector2f(enemies[tmp].getPosition().x, enemies[tmp].getPosition().y + 20), sf::Vector2f(0.2f, 0.3f), tab[(std::rand() % 2)]));
 
 			for (size_t i = 0; i < enemies.size(); i++)
 			{
