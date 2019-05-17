@@ -192,6 +192,7 @@ void Submitscore::addPlayer(std::string name, std::string score)
 			if (playersScores[i].name.getString() == name)
 			{
 				playersScores[i].score.setString(score);
+				std::sort(playersScores.begin(), playersScores.end());
 				savePlayers();
 				return;
 			}
