@@ -34,7 +34,8 @@ namespace LottoApp {
 	private: cli::array<String^>^ tmp;
 	private: bool libAsmChecked;
 	private: bool libCppChecked;
-	private: List<Tuple<String^, bool>^> ^files;
+	//private: List<Tuple<String^, bool>^> ^files;
+	private: List<Tuple<List<int>^, bool>^> ^files;
 
 	private: int poolOfMoney;
 
@@ -803,7 +804,7 @@ namespace LottoApp {
 		//reset okienek poszczegolnych czasow
 		resetTimersTextBoxes();
 
-		files = gcnew List<Tuple<String^, bool>^>;
+		files = gcnew List<Tuple<List<int>^, bool>^>;
 
 		FolderBrowserDialog^ folderBrowserDialog = gcnew FolderBrowserDialog();
 		folderBrowserDialog->ShowDialog();
@@ -815,9 +816,22 @@ namespace LottoApp {
 			DirectoryInfo^ directoryInfo = gcnew DirectoryInfo(pth);
 			tmp = Directory::GetFiles(pth, "*.txt");
 
+			List<int>^ tmpList;
+
 			for (int i = 0; i < tmp->Length; i++)
 			{
-				files->Add(gcnew Tuple<String^, bool>(tmp[i], false));
+				
+				tmpList = getListOfNumbersFromFile(tmp[i]);
+
+				if (tmpList != nullptr)
+				{
+					files->Add(gcnew Tuple<List<int>^, bool>(tmpList, false));
+				}
+				else
+				{
+					files->Clear();
+					return;
+				}
 			}
 		}
 		catch (ArgumentException^ argumentException) //bledny format sciezki
@@ -830,9 +844,9 @@ namespace LottoApp {
 	{
 		for (int i = 0; i < files->Count; i++)
 		{
-			String^s = files[i]->Item1;
+			List<int>^tmpList = files[i]->Item1;
 			files->RemoveAt(i);
-			files->Insert(i, gcnew Tuple<String^, bool>(s, false));
+			files->Insert(i, gcnew Tuple<List<int>^, bool>(tmpList, false));
 		}
 	}
 
@@ -927,11 +941,13 @@ namespace LottoApp {
 		MoneyTextBox->Text = poolOfMoney.ToString();
 	}
 
-	private: int* getArrayOfNumbersFromFile(String^pth)
+	private: List<int>^ getListOfNumbersFromFile(String^pth)
 	{
 		FileInfo^ fileInfo;
 		TextReader^ reader;
-		int* numbersFromFile = new int[6];
+
+		List<int>^ numbersFromFile = gcnew List<int>();
+
 		int number;
 
 		try
@@ -940,7 +956,6 @@ namespace LottoApp {
 
 			if (fileInfo->Length > 24)
 			{
-				delete numbersFromFile;
 				throw gcnew FileLoadException("Plik "+pth+" ma za du¿y rozmiar.");
 			}
 
@@ -955,35 +970,28 @@ namespace LottoApp {
 
 				if (counter > 6)
 				{
-					delete numbersFromFile;
 					throw gcnew FormatException("W pliku "+pth+" znajduje siê za du¿o liczb.");
 				}
 
 
 				number = int::Parse(reader->ReadLine());
 
+
 				if (number > 49 || number < 1)
 				{
-					delete numbersFromFile;
 					throw gcnew FormatException("Liczby w pliku "+pth+" musz¹ byæ z zakresu od 1 do 49");
 				}
-
-
-				for(int i=0;i<6;i++)
+				
+				if (numbersFromFile->Contains(number))
 				{
-					if (numbersFromFile[i] == number)
-					{
-						//delete numbersFromFile;
-						//throw gcnew FormatException("W pliku "+pth+" liczby nie mog¹ siê powtarzaæ.");
-					}
+					throw gcnew FormatException("W pliku "+pth+" liczby nie mog¹ siê powtarzaæ.");
 				}
 
-				numbersFromFile[counter - 1] = number;
+				numbersFromFile->Add(number);
 			}
 
 			if (counter < 6)
 			{
-				delete numbersFromFile;
 				throw gcnew ArgumentNullException("Za ma³o argumentów w pliku "+pth);
 			}
 
@@ -996,8 +1004,8 @@ namespace LottoApp {
 		}
 		catch (ArgumentException^ argumentException)  //bledny format sciezki
 		{
-			//MessageBox::Show(argumentException->Message);
-			//return nullptr;
+			MessageBox::Show(argumentException->Message);
+			return nullptr;
 		}
 		catch (FormatException^ formatException) //bledny format pliku
 		{
@@ -1019,11 +1027,12 @@ namespace LottoApp {
 	private: void calculateNumbersOfWin()
 	{
 
-		int* currentNumbersFromFile = nullptr;
+		int* currentNumbersFromFile = new int[6];
 
 		int result;
 
-		String^s = "";
+		List<int>^ tmpList;
+		String^pth = "";
 
 		try {
 			lock l(this);
@@ -1031,25 +1040,28 @@ namespace LottoApp {
 			{
 				if (files[i]->Item2 == false)
 				{
-					s = files[i]->Item1;
-
-
-					files->Remove(files[i]);
-					files->Add(gcnew Tuple<String^, bool>(s, true));
+					
+					pth = tmp[i];
+					tmpList = files[i]->Item1;
+					
+					files->RemoveAt(i);
+					files->Insert(i, gcnew Tuple<List<int>^, bool>(tmpList, true));
+					//files->Remove(files[i]);
+					//files->Add(gcnew Tuple<List<int>^, bool>(tmpList, true));
 
 					break;
 				}
 			}
-
-			currentNumbersFromFile = getArrayOfNumbersFromFile(s);
 		}
 		catch (...)
 		{
 			MessageBox::Show("Couldn't acquire lock!");
 		}
 
-		if (currentNumbersFromFile == nullptr)
-			return;
+		for (int i = 0; i < 6; i++)
+		{
+			currentNumbersFromFile[i] = tmpList[i];
+		}
 
 		//Asm lub Cpp
 		result = IloscTrafien(numbers, currentNumbersFromFile);
@@ -1059,22 +1071,22 @@ namespace LottoApp {
 			if (result == 6)
 			{
 				numbersOfWins[0] += 1;
-				ticketsWon6->Add(s);
+				ticketsWon6->Add(pth);
 			}
 			else if (result == 5)
 			{
 				numbersOfWins[1] += 1;
-				ticketsWon5->Add(s);
+				ticketsWon5->Add(pth);
 			}
 			else if (result == 4)
 			{
 				numbersOfWins[2] += 1;
-				ticketsWon4->Add(s);
+				ticketsWon4->Add(pth);
 			}
 			else if (result == 3)
 			{
 				numbersOfWins[3] += 1;
-				ticketsWon3->Add(s);
+				ticketsWon3->Add(pth);
 			}
 		}
 		catch (...)
@@ -1109,7 +1121,7 @@ namespace LottoApp {
 			return;
 		}
 
-		if (IloscTrafien == nullptr)
+		if (IloscTrafien == nullptr || ObliczCeny == nullptr)
 		{
 			MessageBox::Show("Nie wybrano biblioteki");
 			return;
@@ -1134,7 +1146,6 @@ namespace LottoApp {
 		{
 			numbersOfWins[i] = 0;
 		}
-
 
 
 		if (numberOfThreads > files->Count)
@@ -1194,7 +1205,8 @@ namespace LottoApp {
 
 		setNumbersOfWins();
 		calculatePricesForWins(); 
-		setPricesForWins(); 
+		setPricesForWins();
+		saveResultsToFile();
 
 		watch->Stop();
 		long long elapsedMs = watch->ElapsedMilliseconds;
@@ -1355,6 +1367,12 @@ namespace LottoApp {
 
 	private: System::Void saveResultsToFile()
 	{
+		if (poolOfMoney == 0)
+			return;
+
+		if (numbers == nullptr)
+			return;
+
 		if (numbersOfWins == nullptr)
 			return;
 
