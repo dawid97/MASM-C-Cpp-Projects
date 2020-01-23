@@ -1,0 +1,28 @@
+Kumulacja: 5000000
+
+Liczby: 4 8 24 10 31 15 
+
+Ilosc szostek: 1
+Ilosc piatek: 0
+Ilosc czworek: 0
+Ilosc trojek: 2
+
+Wygrana 6: 2200000
+Wygrana 5: 0
+Wygrana 4: 0
+Wygrana 3: 24
+
+Szostki:
+
+C:\Users\Dawid\Desktop\JAproject\test\1.txt
+ 
+Piatki:
+ 
+
+Czworki:
+
+
+Trojki:
+
+C:\Users\Dawid\Desktop\JAproject\test\2.txt
+C:\Users\Dawid\Desktop\JAproject\test\4.txt
