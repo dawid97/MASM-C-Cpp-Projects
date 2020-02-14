@@ -6,6 +6,9 @@
 
 
 
+
+/*funkcja porownuje dwie tablice pierwsza to liczby wygrywajace a druga to liczby z pliku.
+  Funkcja zwraca ilosc trafien*/
 int numberOfHits(int*generatedNumbers, int*numbersFromFile)
 {
 	int counter = 0;
@@ -22,7 +25,12 @@ int numberOfHits(int*generatedNumbers, int*numbersFromFile)
 	return counter;
 }
 
-int calculatePrices(int*numbersOfWins, int*winForOnePerson, int poolOfMoney)
+
+
+
+/*funkcja oblicza wygrane przypadajace na jedna osobe.
+  Funkcja zwraca pole pieniezna dla szostki.*/
+void calculatePrices(int*numbersOfWins, int*winForOnePerson, int poolOfMoney)
 {
 	int moneyFor6 = poolOfMoney / 100 * 44;
 	int moneyFor5 = poolOfMoney / 100 * 8;
@@ -52,9 +60,4 @@ int calculatePrices(int*numbersOfWins, int*winForOnePerson, int poolOfMoney)
 		winForOnePerson[3] = (moneyFor3 / numbersOfWins[3]);
 	else
 		winForOnePerson[3] = 0;
-
-	if (numbersOfWins[0] == 0)
-		return moneyFor6;
-	else
-		return 0;
 }

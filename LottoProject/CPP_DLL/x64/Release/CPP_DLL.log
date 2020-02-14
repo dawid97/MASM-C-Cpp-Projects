@@ -1,0 +1,12 @@
+﻿  stdafx.cpp
+  CPP_DLL.cpp
+c:\users\dawid\desktop\lottoapp64\lottoproject\cpp_dll\cpp_dll.cpp(13): warning C4273: 'numberOfHits': inconsistent dll linkage
+  c:\users\dawid\desktop\lottoapp64\lottoproject\cpp_dll\cpp_dll.h(12): note: see previous definition of 'numberOfHits'
+c:\users\dawid\desktop\lottoapp64\lottoproject\cpp_dll\cpp_dll.cpp(34): warning C4273: 'calculatePrices': inconsistent dll linkage
+  c:\users\dawid\desktop\lottoapp64\lottoproject\cpp_dll\cpp_dll.h(14): note: see previous definition of 'calculatePrices'
+  dllmain.cpp
+     Creating library C:\Users\Dawid\Desktop\LottoApp64\LottoProject\x64\Release\CPP_DLL.lib and object C:\Users\Dawid\Desktop\LottoApp64\LottoProject\x64\Release\CPP_DLL.exp
+  Generating code
+  All 3 functions were compiled because no usable IPDB/IOBJ from previous compilation was found.
+  Finished generating code
+  CPP_DLL.vcxproj -> C:\Users\Dawid\Desktop\LottoApp64\LottoProject\x64\Release\CPP_DLL.dll

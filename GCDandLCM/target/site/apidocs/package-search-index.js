@@ -1,1 +1,0 @@
-packageSearchIndex = [{"l":"All Packages","url":"allpackages-index.html"},{"l":"pl.polsl.lab.gcdandlcm"},{"l":"pl.polsl.lab.gcdandlcm.exceptions"},{"l":"pl.polsl.lab.gcdandlcm.ui.controller"},{"l":"pl.polsl.lab.gcdandlcm.ui.model"},{"l":"pl.polsl.lab.gcdandlcm.ui.view"}]

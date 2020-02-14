@@ -1,0 +1,14 @@
+﻿  ATM.cpp
+  BalanceInquiry.cpp
+  BankDatabase.cpp
+  CardReader.cpp
+  Deposit.cpp
+  Keypad.cpp
+  Safe.cpp
+  Screen.cpp
+  Transaction.cpp
+  Withdrawal.cpp
+  main.cpp
+  Generowanie kodu...
+ATM.obj : error LNK2019: nierozpoznany zewnętrzny symbol "public: int __thiscall CardReader::getAccountNumber(void)" (?getAccountNumber@CardReader@@QAEHXZ) przywołany w funkcji "private: void __thiscall ATM::authenticateUser(void)" (?authenticateUser@ATM@@AAEXXZ)
+C:\Users\Dawid\Documents\GitHub\Dawid\ATM\Debug\ATM.exe : fatal error LNK1120: liczba nierozpoznanych elementów zewnętrznych: 1

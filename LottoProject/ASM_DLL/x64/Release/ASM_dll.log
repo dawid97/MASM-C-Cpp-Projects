@@ -1,0 +1,6 @@
+﻿  Assembling ASM.asm...
+     Creating library C:\Users\Dawid\Desktop\LottoApp64\LottoProject\x64\Release\ASM_DLL.lib and object C:\Users\Dawid\Desktop\LottoApp64\LottoProject\x64\Release\ASM_DLL.exp
+ASM_DLL.exp : warning LNK4070: /OUT:ASM.dll directive in .EXP differs from output filename 'C:\Users\Dawid\Desktop\LottoApp64\LottoProject\x64\Release\ASM_DLL.dll'; ignoring directive
+  LINK : /LTCG specified but no code generation required; remove /LTCG from the link command line to improve linker performance
+ASM_DLL.exp : warning LNK4070: /OUT:ASM.dll directive in .EXP differs from output filename 'C:\Users\Dawid\Desktop\LottoApp64\LottoProject\x64\Release\ASM_DLL.dll'; ignoring directive
+  ASM_dll.vcxproj -> C:\Users\Dawid\Desktop\LottoApp64\LottoProject\x64\Release\ASM_DLL.dll

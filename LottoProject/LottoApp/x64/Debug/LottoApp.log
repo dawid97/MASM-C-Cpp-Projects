@@ -1,0 +1,8 @@
+﻿  stdafx.cpp
+  AssemblyInfo.cpp
+  lotto.cpp
+  LottoApp.cpp
+  Generating Code...
+  .NETFramework,Version=v4.6.1.AssemblyAttributes.cpp
+  AssemblyInfo.obj : MSIL module encountered; incremental linking is disabled for MSIL; performing full link
+  LottoApp.vcxproj -> C:\Users\Dawid\Desktop\LottoApp64\LottoProject\x64\Debug\LottoApp.exe

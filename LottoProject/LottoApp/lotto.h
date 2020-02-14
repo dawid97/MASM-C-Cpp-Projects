@@ -2,9 +2,11 @@
 #include<Windows.h>
 #include <msclr/lock.h>
 
-
+/*wskaznik do funkcji z biblioteki dll asm/cpp*/
 typedef int(_stdcall *MyProc1) (int*generatedNumbers, int*numbersFromFile);
-typedef int(_stdcall *MyProc2) (int*numbersOfWins, int*winForOnePerson,int poolOfMoney);
+
+/*wskaznk do funkcji z biblioteki dll asm/cpp*/
+typedef void(_stdcall *MyProc2) (int*numbersOfWins, int*winForOnePerson,int poolOfMoney);
 
 
 namespace LottoApp {
@@ -29,27 +31,56 @@ namespace LottoApp {
 	/// </summary>
 	public ref class lotto : public System::Windows::Forms::Form
 	{
+
+	/*ilosc trafien 3,4,5,6*/
 	private: int* numbersOfWins;
+
+	/*wygrywajace liczby*/
 	private: int* numbers;
+
+	/*sciezki .txt do plikow z katalogu-tymczasowo*/
 	private: cli::array<String^>^ tmp;
+
+	/*wybor biblioteki asm*/
 	private: bool libAsmChecked;
+
+	/*wybor biblioteki cpp*/
 	private: bool libCppChecked;
-	//private: List<Tuple<String^, bool>^> ^files;
+
+	/*sciezki .txt do plikow z katalogu*/
 	private: List<Tuple<List<int>^, bool>^> ^files;
 
+	/*pola pieniedzy*/
 	private: int poolOfMoney;
 
+	/*sciezki .txt z trafiona szostka*/
 	private: List<String^>^ ticketsWon6;
+
+	/*sciezki .txt z trafiona piatka*/
 	private: List<String^>^ ticketsWon5;
+
+	/*sciezki .txt z trafiona czworka*/
 	private: List<String^>^ ticketsWon4;
+
+	/*sciezki .txt z trafiona trojka*/
 	private: List<String^>^ ticketsWon3;
 
+	/*wygrane przypadajace na jedna osobe za poszczegolne trafienia 6,5,4,3*/
 	private: int* winForOnePerson;
+
+	/*ilosc watkow*/
 	private: int numberOfThreads;
+
+	/*ilosc zrobionych plikow*/
 	private: int numberOfDone;
 
+	/*deklaracja funkcji asm lub cpp*/
 	private: MyProc1 IloscTrafien;
+
+	/*deklaracja funkcji asm lub cpp*/
 	private: MyProc2 ObliczCeny;
+
+	/*watki*/
 	private: List<Thread^>^ threads;
 
 
@@ -79,6 +110,10 @@ namespace LottoApp {
 	private: System::Windows::Forms::TextBox^  TimeCppTextBox;
 	private: System::Windows::Forms::TextBox^  TimeAsmTextBox;
 	private: System::Windows::Forms::Label^  WinNumbersLabel;
+	private: System::Windows::Forms::ProgressBar^  progressBar;
+	private: System::Windows::Forms::Label^  ProgressLabel;
+	private: System::Windows::Forms::ProgressBar^  dataProgressBar;
+	private: System::Windows::Forms::Label^  dataLabel;
 
 
 
@@ -90,16 +125,20 @@ namespace LottoApp {
 		lotto(void)
 		{
 			InitializeComponent();
+
+			/*ustawienie poczatkowych wartosci w programie*/
 			poolOfMoney = 0;
 			libAsmChecked = false;
 			libCppChecked = false;
-			ThreatsComboBox->Text = "1";
 			numbersOfWins = nullptr;
 			numbers = nullptr;
 			winForOnePerson = nullptr;
 			IloscTrafien = 0;
 			ObliczCeny = 0;
-			numberOfThreads = 1;
+			progressBar->Step = 1;
+			dataProgressBar->Step = 1;
+			numberOfThreads = Environment::ProcessorCount;
+			ThreatsComboBox->Text = numberOfThreads.ToString();
 			numberOfDone = 0;
 		}
 
@@ -210,6 +249,10 @@ namespace LottoApp {
 			this->TimeCppTextBox = (gcnew System::Windows::Forms::TextBox());
 			this->TimeAsmTextBox = (gcnew System::Windows::Forms::TextBox());
 			this->WinNumbersLabel = (gcnew System::Windows::Forms::Label());
+			this->progressBar = (gcnew System::Windows::Forms::ProgressBar());
+			this->ProgressLabel = (gcnew System::Windows::Forms::Label());
+			this->dataProgressBar = (gcnew System::Windows::Forms::ProgressBar());
+			this->dataLabel = (gcnew System::Windows::Forms::Label());
 			this->SuspendLayout();
 			// 
 			// myDialog
@@ -320,7 +363,7 @@ namespace LottoApp {
 			// 
 			// Check
 			// 
-			this->Check->Location = System::Drawing::Point(162, 462);
+			this->Check->Location = System::Drawing::Point(161, 512);
 			this->Check->Name = L"Check";
 			this->Check->Size = System::Drawing::Size(75, 23);
 			this->Check->TabIndex = 17;
@@ -330,7 +373,7 @@ namespace LottoApp {
 			// 
 			// NumberOf6TextBox
 			// 
-			this->NumberOf6TextBox->Location = System::Drawing::Point(28, 237);
+			this->NumberOf6TextBox->Location = System::Drawing::Point(27, 287);
 			this->NumberOf6TextBox->Name = L"NumberOf6TextBox";
 			this->NumberOf6TextBox->ReadOnly = true;
 			this->NumberOf6TextBox->Size = System::Drawing::Size(62, 20);
@@ -339,7 +382,7 @@ namespace LottoApp {
 			// NumberOf6Label
 			// 
 			this->NumberOf6Label->AutoSize = true;
-			this->NumberOf6Label->Location = System::Drawing::Point(25, 220);
+			this->NumberOf6Label->Location = System::Drawing::Point(24, 270);
 			this->NumberOf6Label->Name = L"NumberOf6Label";
 			this->NumberOf6Label->Size = System::Drawing::Size(41, 13);
 			this->NumberOf6Label->TabIndex = 19;
@@ -348,7 +391,7 @@ namespace LottoApp {
 			// NumberOf5Label
 			// 
 			this->NumberOf5Label->AutoSize = true;
-			this->NumberOf5Label->Location = System::Drawing::Point(25, 282);
+			this->NumberOf5Label->Location = System::Drawing::Point(24, 332);
 			this->NumberOf5Label->Name = L"NumberOf5Label";
 			this->NumberOf5Label->Size = System::Drawing::Size(41, 13);
 			this->NumberOf5Label->TabIndex = 21;
@@ -356,7 +399,7 @@ namespace LottoApp {
 			// 
 			// NumberOf5TextBox
 			// 
-			this->NumberOf5TextBox->Location = System::Drawing::Point(28, 298);
+			this->NumberOf5TextBox->Location = System::Drawing::Point(27, 348);
 			this->NumberOf5TextBox->Name = L"NumberOf5TextBox";
 			this->NumberOf5TextBox->ReadOnly = true;
 			this->NumberOf5TextBox->Size = System::Drawing::Size(62, 20);
@@ -365,7 +408,7 @@ namespace LottoApp {
 			// NumberOf4Label
 			// 
 			this->NumberOf4Label->AutoSize = true;
-			this->NumberOf4Label->Location = System::Drawing::Point(25, 341);
+			this->NumberOf4Label->Location = System::Drawing::Point(24, 391);
 			this->NumberOf4Label->Name = L"NumberOf4Label";
 			this->NumberOf4Label->Size = System::Drawing::Size(41, 13);
 			this->NumberOf4Label->TabIndex = 23;
@@ -373,7 +416,7 @@ namespace LottoApp {
 			// 
 			// NumberOf4TextBox
 			// 
-			this->NumberOf4TextBox->Location = System::Drawing::Point(28, 357);
+			this->NumberOf4TextBox->Location = System::Drawing::Point(27, 407);
 			this->NumberOf4TextBox->Name = L"NumberOf4TextBox";
 			this->NumberOf4TextBox->ReadOnly = true;
 			this->NumberOf4TextBox->Size = System::Drawing::Size(62, 20);
@@ -382,7 +425,7 @@ namespace LottoApp {
 			// NumberOf3Label
 			// 
 			this->NumberOf3Label->AutoSize = true;
-			this->NumberOf3Label->Location = System::Drawing::Point(25, 401);
+			this->NumberOf3Label->Location = System::Drawing::Point(24, 451);
 			this->NumberOf3Label->Name = L"NumberOf3Label";
 			this->NumberOf3Label->Size = System::Drawing::Size(41, 13);
 			this->NumberOf3Label->TabIndex = 25;
@@ -390,7 +433,7 @@ namespace LottoApp {
 			// 
 			// NumberOf3TextBox
 			// 
-			this->NumberOf3TextBox->Location = System::Drawing::Point(28, 417);
+			this->NumberOf3TextBox->Location = System::Drawing::Point(27, 467);
 			this->NumberOf3TextBox->Name = L"NumberOf3TextBox";
 			this->NumberOf3TextBox->ReadOnly = true;
 			this->NumberOf3TextBox->Size = System::Drawing::Size(62, 20);
@@ -415,7 +458,7 @@ namespace LottoApp {
 			// 
 			// MoneyFor6TextBox
 			// 
-			this->MoneyFor6TextBox->Location = System::Drawing::Point(153, 237);
+			this->MoneyFor6TextBox->Location = System::Drawing::Point(152, 287);
 			this->MoneyFor6TextBox->Name = L"MoneyFor6TextBox";
 			this->MoneyFor6TextBox->ReadOnly = true;
 			this->MoneyFor6TextBox->Size = System::Drawing::Size(102, 20);
@@ -423,7 +466,7 @@ namespace LottoApp {
 			// 
 			// MoneyFor5TextBox
 			// 
-			this->MoneyFor5TextBox->Location = System::Drawing::Point(153, 298);
+			this->MoneyFor5TextBox->Location = System::Drawing::Point(152, 348);
 			this->MoneyFor5TextBox->Name = L"MoneyFor5TextBox";
 			this->MoneyFor5TextBox->ReadOnly = true;
 			this->MoneyFor5TextBox->Size = System::Drawing::Size(102, 20);
@@ -431,7 +474,7 @@ namespace LottoApp {
 			// 
 			// MoneyFor4TextBox
 			// 
-			this->MoneyFor4TextBox->Location = System::Drawing::Point(154, 357);
+			this->MoneyFor4TextBox->Location = System::Drawing::Point(153, 407);
 			this->MoneyFor4TextBox->Name = L"MoneyFor4TextBox";
 			this->MoneyFor4TextBox->ReadOnly = true;
 			this->MoneyFor4TextBox->Size = System::Drawing::Size(101, 20);
@@ -439,7 +482,7 @@ namespace LottoApp {
 			// 
 			// MoneyFor3TextBox
 			// 
-			this->MoneyFor3TextBox->Location = System::Drawing::Point(153, 417);
+			this->MoneyFor3TextBox->Location = System::Drawing::Point(152, 467);
 			this->MoneyFor3TextBox->Name = L"MoneyFor3TextBox";
 			this->MoneyFor3TextBox->ReadOnly = true;
 			this->MoneyFor3TextBox->Size = System::Drawing::Size(102, 20);
@@ -448,7 +491,7 @@ namespace LottoApp {
 			// MoneyFor6Label
 			// 
 			this->MoneyFor6Label->AutoSize = true;
-			this->MoneyFor6Label->Location = System::Drawing::Point(151, 220);
+			this->MoneyFor6Label->Location = System::Drawing::Point(150, 270);
 			this->MoneyFor6Label->Name = L"MoneyFor6Label";
 			this->MoneyFor6Label->Size = System::Drawing::Size(62, 13);
 			this->MoneyFor6Label->TabIndex = 34;
@@ -457,7 +500,7 @@ namespace LottoApp {
 			// MoneyFor5Label
 			// 
 			this->MoneyFor5Label->AutoSize = true;
-			this->MoneyFor5Label->Location = System::Drawing::Point(151, 282);
+			this->MoneyFor5Label->Location = System::Drawing::Point(150, 332);
 			this->MoneyFor5Label->Name = L"MoneyFor5Label";
 			this->MoneyFor5Label->Size = System::Drawing::Size(62, 13);
 			this->MoneyFor5Label->TabIndex = 35;
@@ -466,7 +509,7 @@ namespace LottoApp {
 			// MoneyFor4Label
 			// 
 			this->MoneyFor4Label->AutoSize = true;
-			this->MoneyFor4Label->Location = System::Drawing::Point(151, 341);
+			this->MoneyFor4Label->Location = System::Drawing::Point(150, 391);
 			this->MoneyFor4Label->Name = L"MoneyFor4Label";
 			this->MoneyFor4Label->Size = System::Drawing::Size(62, 13);
 			this->MoneyFor4Label->TabIndex = 36;
@@ -475,7 +518,7 @@ namespace LottoApp {
 			// MoneyFor3Label
 			// 
 			this->MoneyFor3Label->AutoSize = true;
-			this->MoneyFor3Label->Location = System::Drawing::Point(151, 401);
+			this->MoneyFor3Label->Location = System::Drawing::Point(150, 451);
 			this->MoneyFor3Label->Name = L"MoneyFor3Label";
 			this->MoneyFor3Label->Size = System::Drawing::Size(62, 13);
 			this->MoneyFor3Label->TabIndex = 37;
@@ -582,7 +625,7 @@ namespace LottoApp {
 			// TimeCppLabel
 			// 
 			this->TimeCppLabel->AutoSize = true;
-			this->TimeCppLabel->Location = System::Drawing::Point(290, 341);
+			this->TimeCppLabel->Location = System::Drawing::Point(289, 391);
 			this->TimeCppLabel->Name = L"TimeCppLabel";
 			this->TimeCppLabel->Size = System::Drawing::Size(55, 13);
 			this->TimeCppLabel->TabIndex = 48;
@@ -591,7 +634,7 @@ namespace LottoApp {
 			// TimeAsmLabel
 			// 
 			this->TimeAsmLabel->AutoSize = true;
-			this->TimeAsmLabel->Location = System::Drawing::Point(290, 401);
+			this->TimeAsmLabel->Location = System::Drawing::Point(289, 451);
 			this->TimeAsmLabel->Name = L"TimeAsmLabel";
 			this->TimeAsmLabel->Size = System::Drawing::Size(56, 13);
 			this->TimeAsmLabel->TabIndex = 49;
@@ -599,7 +642,7 @@ namespace LottoApp {
 			// 
 			// TimeCppTextBox
 			// 
-			this->TimeCppTextBox->Location = System::Drawing::Point(293, 357);
+			this->TimeCppTextBox->Location = System::Drawing::Point(292, 407);
 			this->TimeCppTextBox->Name = L"TimeCppTextBox";
 			this->TimeCppTextBox->ReadOnly = true;
 			this->TimeCppTextBox->Size = System::Drawing::Size(109, 20);
@@ -607,7 +650,7 @@ namespace LottoApp {
 			// 
 			// TimeAsmTextBox
 			// 
-			this->TimeAsmTextBox->Location = System::Drawing::Point(293, 417);
+			this->TimeAsmTextBox->Location = System::Drawing::Point(292, 467);
 			this->TimeAsmTextBox->Name = L"TimeAsmTextBox";
 			this->TimeAsmTextBox->ReadOnly = true;
 			this->TimeAsmTextBox->Size = System::Drawing::Size(109, 20);
@@ -622,11 +665,47 @@ namespace LottoApp {
 			this->WinNumbersLabel->TabIndex = 52;
 			this->WinNumbersLabel->Text = L"Liczby wygrywaj¹ce:";
 			// 
+			// progressBar
+			// 
+			this->progressBar->Location = System::Drawing::Point(26, 561);
+			this->progressBar->Name = L"progressBar";
+			this->progressBar->Size = System::Drawing::Size(375, 23);
+			this->progressBar->TabIndex = 53;
+			// 
+			// ProgressLabel
+			// 
+			this->ProgressLabel->AutoSize = true;
+			this->ProgressLabel->Location = System::Drawing::Point(26, 545);
+			this->ProgressLabel->Name = L"ProgressLabel";
+			this->ProgressLabel->Size = System::Drawing::Size(43, 13);
+			this->ProgressLabel->TabIndex = 54;
+			this->ProgressLabel->Text = L"Postêp:";
+			// 
+			// dataProgressBar
+			// 
+			this->dataProgressBar->Location = System::Drawing::Point(26, 233);
+			this->dataProgressBar->Name = L"dataProgressBar";
+			this->dataProgressBar->Size = System::Drawing::Size(372, 23);
+			this->dataProgressBar->TabIndex = 55;
+			// 
+			// dataLabel
+			// 
+			this->dataLabel->AutoSize = true;
+			this->dataLabel->Location = System::Drawing::Point(26, 214);
+			this->dataLabel->Name = L"dataLabel";
+			this->dataLabel->Size = System::Drawing::Size(34, 13);
+			this->dataLabel->TabIndex = 56;
+			this->dataLabel->Text = L"dane:";
+			// 
 			// lotto
 			// 
 			this->AutoScaleDimensions = System::Drawing::SizeF(6, 13);
 			this->AutoScaleMode = System::Windows::Forms::AutoScaleMode::Font;
-			this->ClientSize = System::Drawing::Size(418, 493);
+			this->ClientSize = System::Drawing::Size(429, 602);
+			this->Controls->Add(this->dataLabel);
+			this->Controls->Add(this->dataProgressBar);
+			this->Controls->Add(this->ProgressLabel);
+			this->Controls->Add(this->progressBar);
 			this->Controls->Add(this->WinNumbersLabel);
 			this->Controls->Add(this->TimeAsmTextBox);
 			this->Controls->Add(this->TimeCppTextBox);
@@ -681,8 +760,12 @@ namespace LottoApp {
 		}
 #pragma endregion
 
+	/*zaladownie liczb wygrywajacych z pliku.*/
 	private: System::Void loadNumbers()
 	{
+		/*wyzerowanie wartosci paska postepu.*/
+		progressBar->Value = 0;
+
 		if (numbers)
 		{
 			delete numbers;
@@ -696,30 +779,40 @@ namespace LottoApp {
 		//reset okienek poszczegolnych czasow
 		resetTimersTextBoxes();
 
+
 		FileInfo^ fileInfo;
 		TextReader^ reader;
 		int number;
 		int counter = 0;
 		numbers = new int[6];
 
-
+		/*otwarcie katalogu*/
 		OpenFileDialog^ openFileDialog = gcnew OpenFileDialog();
 		openFileDialog->Filter = "Txt Files (*.txt)|*.txt";
 		openFileDialog->ShowDialog();
 
+		/*pobranie sciezki do pliku*/
 		String^ filename = openFileDialog->FileName;
 
 		try {
 			fileInfo = gcnew FileInfo(filename);
+
+			/*otwarcie pliku*/
 			reader = File::OpenText(filename);
 
 			if (fileInfo->Length > 22)
 			{
 				delete numbers;
-				throw gcnew FileLoadException("Plik ma za du¿y rozmiar.");
+				throw gcnew FileLoadException("Plik ma za duzy rozmiar.");
 			}
 
+			if (fileInfo->Length < 3)
+			{
+				delete numbers;
+				throw gcnew FileLoadException("Plik ma za maly rozmiar.");
+			}
 
+			/*czytanie pliku*/
 			while (reader->Peek() >= 0)
 			{
 				counter++;
@@ -735,7 +828,7 @@ namespace LottoApp {
 				if (number > 49 || number < 1)
 				{
 					delete numbers;
-					throw gcnew FormatException("Liczby w pliku musz¹ byæ z zakresu od 1 do 49");
+					throw gcnew FormatException("Liczby w pliku musz¹ byæ z zakresu od 1 do 49.");
 				}
 
 				for(int i=0;i<6;i++)
@@ -753,31 +846,32 @@ namespace LottoApp {
 			if (counter < 6)
 			{
 				delete numbers;
-				throw gcnew ArgumentNullException("Za ma³o argumentów w pliku");
+				throw gcnew ArgumentNullException("Za ma³o argumentów w pliku.");
 			}
 		}
 		catch (ArgumentNullException^ argumentNullException) //za malo argumentow w pliku
 		{
-			MessageBox::Show(argumentNullException->Message);
+			MessageBox::Show(argumentNullException->Message+" "+filename);
 			numbers = nullptr;
 		}
 		catch (FileLoadException^ fileLoadException) //za duzy rozmiar pliku
 		{
-			MessageBox::Show(fileLoadException->Message);
+			MessageBox::Show(fileLoadException->Message+" "+filename);
 			numbers = nullptr;
 		}
 		catch (FormatException^ formatException) //bledny format pliku
 		{
-			MessageBox::Show(formatException->Message);
+			MessageBox::Show(formatException->Message+" "+filename);
 			numbers = nullptr;
 		}
 		catch (ArgumentException^ argumentException)  //bledny format sciezki
 		{
-			MessageBox::Show(argumentException->Message);
+			MessageBox::Show(argumentException->Message+" "+filename);
 			numbers = nullptr;
 		}
 	}
 
+	/*ustawienie liczb wygrywajacych na UI*/
 	private: System::Void setNumbers()
 	{
 		if (numbers==nullptr)
@@ -797,6 +891,10 @@ namespace LottoApp {
 
 	private: System::Void DirectoryButton_Click(System::Object^  sender, System::EventArgs^  e)
 	{
+		/*wyzerowanie paskow pastepu*/
+		dataProgressBar->Value = 0;
+		progressBar->Value = 0;
+
 		//resetowanie okienek poszczegolnych wygranych
 		resetNumbersOfWins();
 		resetPricesForWins();
@@ -806,40 +904,62 @@ namespace LottoApp {
 
 		files = gcnew List<Tuple<List<int>^, bool>^>;
 
+		/*otwarcie katalogu*/
 		FolderBrowserDialog^ folderBrowserDialog = gcnew FolderBrowserDialog();
 		folderBrowserDialog->ShowDialog();
 
+		/*pobranie sciezki do katalogu*/
 		String^ pth = folderBrowserDialog->SelectedPath;
 
 		try
 		{
 			DirectoryInfo^ directoryInfo = gcnew DirectoryInfo(pth);
+
+			/*odczytanie sciezek .txt w katalogu*/
 			tmp = Directory::GetFiles(pth, "*.txt");
+
+			dataProgressBar->Maximum = tmp->Length;
 
 			List<int>^ tmpList;
 
+			int counter = 0;
+
+			/*przetwarzenie na kolekcje uzywana w programie*/
 			for (int i = 0; i < tmp->Length; i++)
 			{
-				
+				if (counter >= 2000000)
+				{
+					dataProgressBar->Maximum = 2000000;
+					dataProgressBar->Value = 2000000;
+					MessageBox::Show("Do programu zaladowano max 2 mln plikow.");
+					return;
+				}
+
+				/*pobranie liczb z pliku*/
 				tmpList = getListOfNumbersFromFile(tmp[i]);
 
 				if (tmpList != nullptr)
 				{
+					/*tworzenie nowej kolekcji z krotka*/
 					files->Add(gcnew Tuple<List<int>^, bool>(tmpList, false));
+					counter++;
 				}
 				else
 				{
 					files->Clear();
 					return;
 				}
+				dataProgressBar->PerformStep();
 			}
+			progressBar->Maximum = files->Count;
 		}
 		catch (ArgumentException^ argumentException) //bledny format sciezki
 		{
-			MessageBox::Show(argumentException->Message);
+			MessageBox::Show(argumentException->Message+" "+pth);
 		}
 	}
 
+	/*przywrocenie ustawien poczatkowych zaladowanych plikow*/
 	private: System::Void resetFiles()
 	{
 		for (int i = 0; i < files->Count; i++)
@@ -850,14 +970,18 @@ namespace LottoApp {
 		}
 	}
 
+	/*wywolywana akcja na naciskniecie przycisku otowrz przy liczbach wygrywajacych na UI*/
 	private: System::Void NumbersButton_Click(System::Object^  sender, System::EventArgs^  e)
 	{
 		loadNumbers();
 		setNumbers();
 	}
 
+	/*zaladowanie poli pieniedzy z pliku*/
 	private: System::Void loadPoolOfMoney()
 	{
+		progressBar->Value = 0;
+
 		//resetowanie okienek poszczegolnych wygranych
 		resetNumbersOfWins();
 		resetPricesForWins();
@@ -870,29 +994,38 @@ namespace LottoApp {
 		int money;
 		int counter = 0;
 
+		/*otwarcie katalogu*/
 		OpenFileDialog^ openFileDialog = gcnew OpenFileDialog();
 		openFileDialog->Filter = "Txt Files (*.txt)|*.txt";
 		openFileDialog->ShowDialog();
 
+		/*pobranie sciezki do pliku*/
 		String^ pth = openFileDialog->FileName;
 
 		try {
 			fileInfo = gcnew FileInfo(pth);
+
+			/*otwarcie pliku*/
 			reader = File::OpenText(pth);
 
 			if (fileInfo->Length > 12)
 			{
-				throw gcnew FileLoadException("Plik ma za du¿y rozmiar.");
+				throw gcnew FileLoadException("Plik ma za duzy rozmiar.");
 			}
 
+			if (fileInfo->Length < 3)
+			{
+				throw gcnew FileLoadException("Plik ma za maly rozmiar.");
+			}
 
+			/*odczyt pliku*/
 			while (reader->Peek() >= 0)
 			{
 				counter++;
 
 				if (counter > 1)
 				{
-					throw gcnew FormatException("W pliku znajduje siê za du¿o liczb.");
+					throw gcnew FormatException("W pliku znajduje siê za duzo liczb.");
 				}
 
 				money = int::Parse(reader->ReadLine());
@@ -917,22 +1050,23 @@ namespace LottoApp {
 		}
 		catch (ArgumentNullException^ argumentNullException) //za malo argumentow w pliku
 		{
-			MessageBox::Show(argumentNullException->Message);
+			MessageBox::Show(argumentNullException->Message+" "+pth);
 		}
 		catch (FileLoadException^ fileLoadException) //za duzy rozmiar pliku
 		{
-			MessageBox::Show(fileLoadException->Message);
+			MessageBox::Show(fileLoadException->Message+" "+pth);
 		}
 		catch (FormatException^ formatException) //bledny format pliku
 		{
-			MessageBox::Show(formatException->Message);
+			MessageBox::Show(formatException->Message+" "+pth);
 		}
 		catch (ArgumentException^ argumentException)  //bledny format sciezki
 		{
-			MessageBox::Show(argumentException->Message);
+			MessageBox::Show(argumentException->Message+" "+pth);
 		}
 	}
 
+	/*ustawienie poli pieniedzy na UI*/
 	private: System::Void setPoolOfMoney()
 	{
 		if (poolOfMoney == 0)
@@ -941,6 +1075,7 @@ namespace LottoApp {
 		MoneyTextBox->Text = poolOfMoney.ToString();
 	}
 
+	/*pobranie liczb z pliku*/
 	private: List<int>^ getListOfNumbersFromFile(String^pth)
 	{
 		FileInfo^ fileInfo;
@@ -956,21 +1091,27 @@ namespace LottoApp {
 
 			if (fileInfo->Length > 24)
 			{
-				throw gcnew FileLoadException("Plik "+pth+" ma za du¿y rozmiar.");
+				throw gcnew FileLoadException("Plik ma za duzy rozmiar.");
 			}
 
+			if (fileInfo->Length < 3)
+			{
+				throw gcnew FileLoadException("Plik ma za maly rozmiar.");
+			}
 
+			/*otwarcie pliku*/
 			reader = File::OpenText(pth);
 
 			int counter = 0;
 
+			/*odczyt pliku*/
 			while (reader->Peek() >= 0)
 			{
 				counter++;
 
 				if (counter > 6)
 				{
-					throw gcnew FormatException("W pliku "+pth+" znajduje siê za du¿o liczb.");
+					throw gcnew FormatException("W pliku znajduje siê za duzo liczb.");
 				}
 
 
@@ -979,12 +1120,12 @@ namespace LottoApp {
 
 				if (number > 49 || number < 1)
 				{
-					throw gcnew FormatException("Liczby w pliku "+pth+" musz¹ byæ z zakresu od 1 do 49");
+					throw gcnew FormatException("Liczby w pliku musz¹ byc z zakresu od 1 do 49.");
 				}
 				
 				if (numbersFromFile->Contains(number))
 				{
-					throw gcnew FormatException("W pliku "+pth+" liczby nie mog¹ siê powtarzaæ.");
+					throw gcnew FormatException("W pliku liczby nie mog¹ sie powtarzac.");
 				}
 
 				numbersFromFile->Add(number);
@@ -992,38 +1133,39 @@ namespace LottoApp {
 
 			if (counter < 6)
 			{
-				throw gcnew ArgumentNullException("Za ma³o argumentów w pliku "+pth);
+				throw gcnew ArgumentNullException("Za malo argumentow w pliku.");
 			}
 
 			return numbersFromFile;
 		}
 		catch (ArgumentNullException^ argumentNullException) //za malo argumentow w pliku
 		{
-			MessageBox::Show(argumentNullException->Message);
+			MessageBox::Show(argumentNullException->Message+" "+pth);
 			return nullptr;
 		}
 		catch (ArgumentException^ argumentException)  //bledny format sciezki
 		{
-			MessageBox::Show(argumentException->Message);
+			MessageBox::Show(argumentException->Message+" "+pth);
 			return nullptr;
 		}
 		catch (FormatException^ formatException) //bledny format pliku
 		{
-			MessageBox::Show(formatException->Message);
+			MessageBox::Show(formatException->Message+" "+pth);
 			return nullptr;
 		}
 		catch (FileLoadException^ fileLoadException) //za duzy rozmiar pliku
 		{
-			MessageBox::Show(fileLoadException->Message);
+			MessageBox::Show(fileLoadException->Message+" "+pth);
 			return nullptr;
 		}
 		catch (FileNotFoundException^ fileNotFoundException) //nie znaleziono pliku
 		{
-			MessageBox::Show(fileNotFoundException->Message);
+			MessageBox::Show(fileNotFoundException->Message+" "+pth);
 			return nullptr;
 		}
 	}
 
+	/*funkcja wywolywana na jeden watek*/
 	private: void calculateNumbersOfWin()
 	{
 
@@ -1046,8 +1188,6 @@ namespace LottoApp {
 					
 					files->RemoveAt(i);
 					files->Insert(i, gcnew Tuple<List<int>^, bool>(tmpList, true));
-					//files->Remove(files[i]);
-					//files->Add(gcnew Tuple<List<int>^, bool>(tmpList, true));
 
 					break;
 				}
@@ -1063,7 +1203,7 @@ namespace LottoApp {
 			currentNumbersFromFile[i] = tmpList[i];
 		}
 
-		//Asm lub Cpp
+		//wywolanie funkcji z biblioteki dll asm lub cpp
 		result = IloscTrafien(numbers, currentNumbersFromFile);
 
 		try {
@@ -1101,8 +1241,11 @@ namespace LottoApp {
 		}
 	}
 
+	/*akcja wywolywana na przycisniecie przycisku sprawdz na UI*/
 	private: System::Void Check_Click(System::Object^  sender, System::EventArgs^  e)
 	{
+		progressBar->Value = 0;
+
 		if (files == nullptr || files->Count == 0)
 		{
 			MessageBox::Show("Nie wybrano katalogu lub katalog jest pusty.");
@@ -1151,8 +1294,8 @@ namespace LottoApp {
 		if (numberOfThreads > files->Count)
 			numberOfThreads = files->Count;
 
-		Stopwatch^ watch = Stopwatch::StartNew();
-
+		
+		/*utworzenie watkow*/
 		threads = gcnew List<Thread^>();
 
 		for (int i = 0; i < numberOfThreads; i++)
@@ -1160,26 +1303,31 @@ namespace LottoApp {
 			threads->Add(gcnew Thread(gcnew ThreadStart(this, &lotto::calculateNumbersOfWin)));
 		}
 
-		
+		/*odliczanie czasu-start*/
+		Stopwatch^ watch = Stopwatch::StartNew();
 
 		for (int i = 0; i < numberOfThreads; i++)
-		{
+		{ 
 			threads[i]->Start();
+
 			if (numberOfThreads == 1)
 				threads[i]->Join();
 		}
 
+		/*jesli liczba plikow jest mniejsza od liczby watkow*/
 		numberOfDone = numberOfThreads;
+	
 
 
-
+		/*uruchamianie kolejnych watkow az do skonczenia plikow*/
 		while (numberOfDone < files->Count)
 		{
 			for (int i = 0; i < numberOfThreads; i++)
 			{
+				/*sprawdzanie czy watek jest nadal aktywny jesli nie to uruchamiamy kolejny*/
 				if (threads[i]->IsAlive == false)
 				{
-
+					progressBar->PerformStep();
 					threads[i] = gcnew Thread(gcnew ThreadStart(this, &lotto::calculateNumbersOfWin));
 					threads[i]->Start();
 
@@ -1188,6 +1336,7 @@ namespace LottoApp {
 
 					numberOfDone += 1;
 
+					/*nastapil koniec plikow*/
 					if (numberOfDone == files->Count)
 					{
 						break;
@@ -1197,18 +1346,33 @@ namespace LottoApp {
 			}
 		}
 
+		/*zaczekanie na zakonczenie watkow*/
 		for (int i = 0; i < numberOfThreads; i++)
 		{
+			progressBar->PerformStep();
 			threads[i]->Join();
 		}
 
+		
 
-		setNumbersOfWins();
+		/*obliczenie cen wygywajaych za poszczegolne trafienia przypadajace na jedna osobe*/
 		calculatePricesForWins(); 
-		setPricesForWins();
+
+		/*zapisanie rezultatu programu do pliku*/
 		saveResultsToFile();
 
+		
+		/*ustawienie ilosci trafien poszczegolnych liczb 6,5,4,3 na UI*/
+		setNumbersOfWins();
+
+		/*ustawienie cen wygywajaych za poszczegolne trafienia przypadajace na jedna osobe*/
+		setPricesForWins();
+		
+
+		/*odliczanie czasu-stop*/
 		watch->Stop();
+
+		/*obliczenie jaki czas uplynal*/
 		long long elapsedMs = watch->ElapsedMilliseconds;
 
 		if (libCppChecked)
@@ -1220,15 +1384,18 @@ namespace LottoApp {
 			TimeAsmTextBox->Text = elapsedMs.ToString();
 		}
 
+		/*przywrocenie plikow do stanu poczatkowego*/
 		resetFiles();
 	}
 
+	/*reset okienek czasu na UI*/
 	private: System::Void resetTimersTextBoxes()
 	{
 		TimeAsmTextBox->Text = "";
 		TimeCppTextBox->Text = "";
 	}
 
+	/*ustawienie ilosci trafien poszczegolnych liczb 6,5,4,3 na UI*/
 	private: System::Void setNumbersOfWins()
 	{
 		if (numbersOfWins == nullptr)
@@ -1247,6 +1414,7 @@ namespace LottoApp {
 
 	}
 
+	 /*reset ilosci trafien poszczegolnych liczb 6,5,4,3 na UI*/
 	private: System::Void resetNumbersOfWins()
 	{
 		List<TextBox^>^ textBoxes = gcnew List<TextBox^>();
@@ -1261,6 +1429,7 @@ namespace LottoApp {
 		}
 	}
 
+	/*reset cen wygywajaych za poszczegolne trafienia przypadajace na jedna osobe*/
 	private: System::Void resetPricesForWins()
 	{
 		List<TextBox^>^ textBoxes = gcnew List<TextBox^>();
@@ -1275,19 +1444,26 @@ namespace LottoApp {
 		}
 	}
 
+	/*akcja na nacisnieie przycisku otworz przy pola pieniedzy na UI*/
 	private: System::Void PoolOfMoneyButton_Click(System::Object^  sender, System::EventArgs^  e)
 	{
 		loadPoolOfMoney();
 		setPoolOfMoney();
 	}
 
+	/*akcja na nacisniecie przycisku asm na UI*/
 	private: System::Void AsmLibraryButton_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
+
+		progressBar->Value = 0;
 
 		//resetowanie okienek poszczegolnych wygranych
 		resetNumbersOfWins();
 		resetPricesForWins();
 		
+		/*uchwyt do biblioteki dll*/
 		HINSTANCE uchwytDLL = 0;
+
+		/*zaladowanie biblioteki dll asm*/
 		uchwytDLL = LoadLibraryA("ASM_DLL.dll");
 
 		if (!uchwytDLL)
@@ -1296,20 +1472,29 @@ namespace LottoApp {
 			return;
 		}
 
+		/*zaladowanie funkcji MyProc1 z biblioteki dll asm*/
 		IloscTrafien = (MyProc1)GetProcAddress(uchwytDLL, "MyProc1");
+
+		/*zaladowanie funkcji MyProc2 z biblioteki dll asm*/
 		ObliczCeny = (MyProc2)GetProcAddress(uchwytDLL, "MyProc2");
 		
 		libAsmChecked = true;
 		libCppChecked = false;
 	}
 
+	/*akcja na nacisniecie przycisku cpp na UI*/
 	private: System::Void CppLibraryButton_CheckedChanged(System::Object^  sender, System::EventArgs^  e) {
+
+		progressBar->Value = 0;
 
 		//resetowanie okienek poszczegolnych wygranych
 		resetNumbersOfWins();
 		resetPricesForWins();
 
+		/*uchwyt do biblioteki dll*/
 		HINSTANCE uchwytDLL = 0;
+
+		/*zaladowanie biblioteki dll cpp*/
 		uchwytDLL = LoadLibraryA("CPP_DLL.dll");
 		
 		if (!uchwytDLL)
@@ -1318,13 +1503,17 @@ namespace LottoApp {
 			return;
 		}
 		
+		/*zaladowanie funkcji numberOfHits z biblioteki dll cpp*/
 		IloscTrafien = (MyProc1)GetProcAddress(uchwytDLL, "numberOfHits");
+
+		/*zaladowanie funkcji calculatePrices z biblioteki dll cpp*/
 		ObliczCeny = (MyProc2)GetProcAddress(uchwytDLL, "calculatePrices");
 
 		libCppChecked = true;
 		libAsmChecked = false;
 	}
 
+	/*obliczenie cen wygywajaych za poszczegolne trafienia przypadajace na jedna osobe*/
 	private: void calculatePricesForWins()
 	{
 		if (winForOnePerson)
@@ -1338,9 +1527,11 @@ namespace LottoApp {
 
 		winForOnePerson = new int[4];
 
+		/*wywolanie funkcji z bibloteki dll asm lub cpp*/
 		ObliczCeny(numbersOfWins, winForOnePerson,poolOfMoney);
 	}
 
+	/*ustawienie cen wygywajaych za poszczegolne trafienia przypadajace na jedna osobe*/
 	private: void setPricesForWins()
 	{
 		if (winForOnePerson == nullptr)
@@ -1365,6 +1556,7 @@ namespace LottoApp {
 		}
 	}
 
+	/*zapisanie rezultatu obliczen programu do pliku*/
 	private: System::Void saveResultsToFile()
 	{
 		if (poolOfMoney == 0)
@@ -1390,6 +1582,7 @@ namespace LottoApp {
 
 		StreamWriter^outFile = gcnew StreamWriter(filename);
 
+		/*zapisanie poli pieniedzy*/
 		outFile->WriteLine("Kumulacja: " + poolOfMoney.ToString());
 		outFile->WriteLine();
 
@@ -1401,18 +1594,21 @@ namespace LottoApp {
 		outFile->WriteLine();
 		outFile->WriteLine();
 
+		/*zapisanie ilosci poszczegolnych trafien 6,5,4,3*/
 		outFile->WriteLine("Ilosc szostek: " + numbersOfWins[0]);
 		outFile->WriteLine("Ilosc piatek: " + numbersOfWins[1]);
 		outFile->WriteLine("Ilosc czworek: " + numbersOfWins[2]);
 		outFile->WriteLine("Ilosc trojek: " + numbersOfWins[3]);
 		outFile->WriteLine();
 
+		/*zapisanie cen za poszczeoglne trafienia 6,5,4,3 przypadajace na jedna osobe*/
 		outFile->WriteLine("Wygrana 6: " + winForOnePerson[0]);
 		outFile->WriteLine("Wygrana 5: " + winForOnePerson[1]);
 		outFile->WriteLine("Wygrana 4: " + winForOnePerson[2]);
 		outFile->WriteLine("Wygrana 3: " + winForOnePerson[3]);
 		outFile->WriteLine();
 
+		/*zapisanie sciezek do plikow w ktorych jest trafiona szostka*/
 		outFile->WriteLine("Szostki:");
 		outFile->WriteLine();
 		for each(String^element in ticketsWon6)
@@ -1420,6 +1616,8 @@ namespace LottoApp {
 			outFile->WriteLine(element);
 		}
 		outFile->WriteLine(" ");
+
+		/*zapisanie sciezek do plikow w ktorych jest trafiona piatka*/
 		outFile->WriteLine("Piatki:");
 		outFile->WriteLine(" ");
 		for each(String^element in ticketsWon5)
@@ -1427,6 +1625,8 @@ namespace LottoApp {
 			outFile->WriteLine(element);
 		}
 		outFile->WriteLine();
+
+		/*zapisanie sciezek do plikow w ktorych jest trafiona czworka*/
 		outFile->WriteLine("Czworki:");
 		outFile->WriteLine();
 		for each(String^element in ticketsWon4)
@@ -1434,6 +1634,8 @@ namespace LottoApp {
 			outFile->WriteLine(element);
 		}
 		outFile->WriteLine();
+
+		/*zapisanie sciezek do plikow w ktorych jest trafiona trojka*/
 		outFile->WriteLine("Trojki:");
 		outFile->WriteLine();
 		for each(String^element in ticketsWon3)
@@ -1444,8 +1646,11 @@ namespace LottoApp {
 		outFile->Close();
 	}
 
+	/*akcja wywolywana na nacisniecie przycisku do zmiany liczby watkow na UI*/
 	private: System::Void ThreatsComboBox_SelectedIndexChanged(System::Object^  sender, System::EventArgs^  e) {
 		numberOfThreads = int::Parse(ThreatsComboBox->SelectedItem->ToString());
+
+		progressBar->Value = 0;
 
 		//reset okienk poszczegolnych wygranych
 		resetNumbersOfWins();
@@ -1455,27 +1660,27 @@ namespace LottoApp {
 		resetTimersTextBoxes();
 	}
 
-private: System::Void lotto_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
+	/*wyczysczenie pamieci przy zakonczeniu programu*/
+	private: System::Void lotto_FormClosing(System::Object^  sender, System::Windows::Forms::FormClosingEventArgs^  e) {
 
-	if (numbers)
-	{
-		delete numbers;
-		numbers = nullptr;
+		if (numbers)
+		{
+			delete numbers;
+			numbers = nullptr;
+		}
+
+		if (winForOnePerson)
+		{
+			delete winForOnePerson;
+			winForOnePerson = nullptr;
+		}
+
+		if (numbersOfWins)
+		{
+			delete numbersOfWins;
+			numbersOfWins = nullptr;
+		}
 	}
-
-	if (winForOnePerson)
-	{
-		delete winForOnePerson;
-		winForOnePerson = nullptr;
-	}
-
-	if (numbersOfWins)
-	{
-		delete numbersOfWins;
-		numbersOfWins = nullptr;
-	}
-}
-
 
 };
 }

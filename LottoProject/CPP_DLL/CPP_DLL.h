@@ -1,4 +1,5 @@
 // LottoDllCpp.h - Contains declarations of functions
+//eksportowanie fukkcji z biblioteki dll
 #pragma once
 
 #ifdef LOTTODLLCPP_EXPORTS
@@ -10,5 +11,5 @@
 
 extern "C" LOTTODLLCPP_API int numberOfHits(int*generatedNumbers, int*numbersFromFile);
 
-extern "C" LOTTODLLCPP_API int calculatePrices(int*numbersOfWins, int*winForOnePerson, int poolOfMoney);
+extern "C" LOTTODLLCPP_API void calculatePrices(int*numbersOfWins, int*winForOnePerson, int poolOfMoney);
 

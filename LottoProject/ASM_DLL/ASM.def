@@ -1,3 +1,4 @@
+;eksportowanie funkcji MyProc1 oraz MyProc2
 LIBRARY ASM
 
 EXPORTS MyProc1
